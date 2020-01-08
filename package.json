@@ -3,12 +3,18 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@testing-library/jest-dom": "^4.2.4",
-    "@testing-library/react": "^9.3.2",
-    "@testing-library/user-event": "^7.1.2",
+    "@mrblenny/react-flow-chart": "0.0.8",
+    "@types/uuid": "^3.4.6",
+    "bootstrap": "^4.0.0-alpha.6",
+    "lodash": "^4.17.15",
+    "prop-types": "^15.7.2",
     "react": "^16.12.0",
+    "react-addons-css-transition-group": "^15.6.2",
+    "react-addons-transition-group": "^15.6.2",
     "react-dom": "^16.12.0",
-    "react-scripts": "3.3.0"
+    "react-scripts": "3.3.0",
+    "reactstrap": "^8.2.0",
+    "typescript": "^3.7.4"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -30,5 +36,18 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  }
+  },
+  "description": "flow editer test",
+  "main": "index.js",
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/inseop-lee/frapher.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/inseop-lee/frapher/issues"
+  },
+  "homepage": "https://github.com/inseop-lee/frapher#readme"
 }
