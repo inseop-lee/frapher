@@ -42,7 +42,9 @@ class NodeCanvas extends React.Component {
     this.setState(newState);
   };
 
-  componentDidUpdate(props, state) {}
+  componentDidUpdate(props, state) {
+    //TODO this.state Update from this.props
+  }
   onSelectChild(nodeId, id) {
     console.log(nodeId, id);
     return;
