@@ -4,6 +4,7 @@
     -moz-box-sizing: border-box;
     box-sizing: border-box;
 }
+
 html,body
 {
     height:100%;
@@ -11,24 +12,54 @@ html,body
 
 #container
 {
-    position: relative;
-    display:block;
-    width: 100%;
+    display: flex;
+    width:100%;
     height:100%;
-}
-.row
-{
-    overflow: hidden;
-    height: 100%;
+    justify-content: space-between;
 }
 
-#aside, #section
-{
-    padding: 0 0 99999px; 
-    float: left;
-    margin-bottom: -99999px;
+.layout-pane {
+    overflow: hidden !important;
 }
-#aside
-{
-    left:0;
+
+.sc-htpNat {
+    background-color: transparent !important;
+}
+
+.node {
+    cursor: auto;
+    border-radius: 0.7em !important;
+}
+
+.node .card-title {
+    margin: 0.5em 0 0.75em 0.5em;
+}
+
+.node .card-body {
+    padding: 0 0.4em 0.4em 0.4em;
+}
+
+.node .list-group {
+    margin-bottom: 0.3em
+}
+
+.node .list-group-item {
+    padding: 0.5em;
+}
+
+.node .list-group-item div {
+    width:100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.node .list-group-item .badge {
+    margin: 0;
+    margin-top:2px;
+}
+.node .list-group-item .text {
+    padding: 0;
+    margin: 0;
+    display : block;
 }
