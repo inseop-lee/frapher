@@ -12,7 +12,6 @@ import {
   } from "reactstrap";
 
 function NodeInner({node, config, onSelectChild, onClickAddChild}) {
-    
     return (
       <Card className="node">
         <CardTitle>{node.id}</CardTitle>

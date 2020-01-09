@@ -44,11 +44,11 @@ class NodeCanvas extends React.Component {
 
   componentDidUpdate(props,state) {
   }
-  onSelectChild = (nodeId, id) => {
+  onSelectChild(nodeId, id) {
     console.log(nodeId,id)
     return;
   }
-  onClickAddChild = (id) => {
+  onClickAddChild(id) {
     console.log(id)
     return;
   }
@@ -75,7 +75,7 @@ class NodeCanvas extends React.Component {
           chart={this.state}
           callbacks={stateActions}
           Components={{
-            NodeInner: (node,config) => NodeInner(node,config,this.onSelectChild.bind,this.onClickAddChild.bind)
+            NodeInner: (props) => NodeInner({...props,onClickAddChild:this.onClickAddChild,onSelectChild:this.onSelectChild})
           }}
         />
       </div>
