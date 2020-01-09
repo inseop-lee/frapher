@@ -5,7 +5,6 @@ import NodeCanvas from "./NodeCanvas";
 
 function mapStateToProps(state) {
   const { nodes, links, selected, selectedChild } = state;
-  console.log("mapStateToProps")
   return {
     nodes,
     links,

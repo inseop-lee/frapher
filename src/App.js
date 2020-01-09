@@ -10,8 +10,6 @@ import nodeItems from "./reducer";
 
 let store = createStore(nodeItems);
 
-console.log(store.getState());
-
 function App(props) {
   return (
     <Provider store={store}>

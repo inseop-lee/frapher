@@ -37,7 +37,7 @@ function NodeInner({node, config, onSelectChild, onClickAddChild}) {
             onClick={e => onClickAddChild(node.id)}
             block
           >
-            Add Job
+            Add Child
           </Button>
         </CardBody>
       </Card>

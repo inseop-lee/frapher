@@ -1,16 +1,9 @@
 import { mapValues } from "lodash";
 import React from "react";
 import * as actions from "@mrblenny/react-flow-chart/src/container/actions";
-import {
-  Button,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  Input
-} from "reactstrap";
 import { FlowChart } from "@mrblenny/react-flow-chart";
 import NodeInner from "./NodeInner";
+import InputModal from "../Common/InputModal";
 
 class NodeCanvas extends React.Component {
   constructor(props) {
@@ -23,24 +16,14 @@ class NodeCanvas extends React.Component {
       nodes: this.props.nodes,
       links: this.props.links,
       selected: this.props.selected,
-      hovered: {}
+      hovered: {},
+      isOpenAddChild: false
     };
-    this.state = {
-      ...this.state,
-      addJobModal: {
-        isOpen: false,
-        title: "Input job id"
-      }
-    };
+    this.onClickAddChild = this.onClickAddChild.bind(this)
+    this.onSelectChild = this.onSelectChild.bind(this)
+    this.onSubmit = this.onSubmit.bind(this)
   }
 
-  toggleAddJobModal = () => {
-    const newState = {
-      ...this.state,
-      addJobModal: { isOpen: !this.state.addJobModal.isOpen }
-    };
-    this.setState(newState);
-  };
 
   componentDidUpdate(props, state) {
     //TODO this.state Update from this.props
@@ -50,8 +33,14 @@ class NodeCanvas extends React.Component {
     return;
   }
   onClickAddChild(id) {
-    console.log(id);
+    this.setState({isOpenAddChild: !this.state.isOpenAddChild});
     return;
+  }
+  onSubmit(event) {
+    const currentProps = this.props;
+    event.preventDefault();
+    this.setState({isOpenAddChild: !this.state.isOpenAddChild});
+    console.log(event.target)
   }
 
   render() {
@@ -60,25 +49,16 @@ class NodeCanvas extends React.Component {
     );
     return (
       <div>
-        <Modal
-          isOpen={this.state.addJobModal.isOpen}
-          toggle={this.toggleAddJobModal}
-        >
-          <ModalHeader toggle={this.toggleAddJobModal}>
-            {this.state.addJobModal.title}
-          </ModalHeader>
-          <ModalBody>
-            <Input type="text" name="jobId" placeholder="Job ID" />
-          </ModalBody>
-          <ModalFooter>
-            <Button color="primary" type="submit">
-              Add
-            </Button>{" "}
-            <Button color="secondary" onClick={this.toggleAddJobModal}>
-              Cancel
-            </Button>
-          </ModalFooter>
-        </Modal>
+        <InputModal
+          isOpen={this.state.isOpenAddChild}
+          title="Create New Child Node"
+          inputArray={[
+            {title:"Node ID", id:"nodeId", name:"nodeId",type:"text",placeholder:"Input Node ID", value:this.state.selected.id},
+            {title:"Child ID",id:"childId", name:"childId",type:"text",placeholder:"Enter New Child ID"},
+            {title:"Type",id:"childType", name:"childType", type:"select", options:["control","http"]}
+          ]}
+          onSubmit={this.onSubmit}
+        />
         <FlowChart
           chart={this.state}
           callbacks={stateActions}
