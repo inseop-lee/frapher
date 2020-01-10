@@ -139,7 +139,7 @@ function applyAddNode(state, action) {
 
 function applySelectItem(state, action) {
 	const selectedNode = {
-		type: action.nodeType,
+		type: action.itemType,
 		id: action.id
 	}
 	return {
@@ -153,10 +153,14 @@ function applyAddChildNode(state, action) {
 		id: action.id,
 		type: action.itemType
 	}
-	const nodes = state.nodes[action.parentId].children.concat(newChild)
+	const nodes = Object.assign({},state.nodes)
+	nodes[action.parentId].children.push(newChild)
 	return {
 		...state,
-		nodes: nodes,
+		nodes: {
+			...state.nodes,
+						
+		}
 	}
 }
 
