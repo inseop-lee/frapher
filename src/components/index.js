@@ -1,7 +1,7 @@
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { actionCreators as actions } from "../container/reducer";
-import FlowContents from "./FlowContents";
+import FlowContainer from "./FlowContainer";
 
 function mapStateToProps(state) {
     const { nodes, links, selected, selectedChild } = state;
@@ -21,4 +21,4 @@ function mapStateToProps(state) {
     };
   }
   
-  export default connect(mapStateToProps, mapDispatchToProps)(FlowContents);
+  export default connect(mapStateToProps, mapDispatchToProps)(FlowContainer);

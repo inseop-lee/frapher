@@ -2,46 +2,50 @@
 import React from "react";
 
 import {
-    Card,
-    CardTitle,
-    CardBody,
-    Badge,
-    Button,
-    ListGroup,
-    ListGroupItem
-  } from "reactstrap";
+  Card,
+  CardTitle,
+  CardBody,
+  Badge,
+  Button,
+  ListGroup,
+  ListGroupItem
+} from "reactstrap";
 
-function NodeInner({node, config, onSelectChild, onClickAddChild}) {
-    return (
-      <Card className="node">
-        <CardTitle>{node.id}</CardTitle>
-        <CardBody>
-          <ListGroup>
-            {node.children &&
-              node.children.map(child => {
-                return (
-                  <ListGroupItem
-                    key={node.id+'/'+child.id}
-                    onClick={e => onSelectChild(node.id, child.id)}
-                  >
-                    <div>
-                      <span className="text">{child.id}</span>
-                      <Badge color="info">{child.type}</Badge>
-                    </div>
-                  </ListGroupItem>
-                );
-              })}
-          </ListGroup>
-          <Button
-            color="success"
-            onClick={e => onClickAddChild(node.id)}
-            block
-          >
-            Add Child
-          </Button>
-        </CardBody>
-      </Card>
-    );
-  };
+function NodeInner({ node, config, selectItem }) {
+  return (
+    <Card className="node">
+      <CardTitle className="font-weight-bold">{node.id}</CardTitle>
+      <CardBody>
+        <ChildNodes 
+          node={node}
+          config={config}
+          selectItem={selectItem}
+        />
+      </CardBody>
+    </Card>
+  );
+};
 
-  export default NodeInner
+export function ChildNodes({ node, config, selectItem }) {
+  return (
+    <ListGroup>
+      {node.children &&
+        node.children.map(child => {
+          return (
+            <ListGroupItem
+              key={node.id + '/' + child.id}
+              onClick={e => selectItem(child.id, "child")}
+            >
+              <div>
+                <span className="text">{child.id}</span>
+                <Badge color="info">{child.type}</Badge>
+              </div>
+            </ListGroupItem>
+          );
+        })}
+    </ListGroup>
+  )
+}
+
+
+export default NodeInner;

@@ -1,4 +1,3 @@
-import { mapValues } from "lodash";
 import React from "react";
 import * as actions from "@mrblenny/react-flow-chart/src/container/actions";
 import { FlowChart } from "@mrblenny/react-flow-chart";
@@ -22,10 +21,6 @@ class NodeCanvas extends React.Component {
     this.onClickAddChild = this.onClickAddChild.bind(this)
     this.onSelectChild = this.onSelectChild.bind(this)
     this.onSubmit = this.onSubmit.bind(this)
-    
-    this.callbacks = mapValues(actions, func => (...args) =>
-      this.setState(func(...args))
-    );
 
     this.callbacks = Object.keys(actions).reduce((obj,key,idx)=>{
       obj[key] = (...args) =>{
@@ -37,13 +32,13 @@ class NodeCanvas extends React.Component {
 
   }
   
-  onAction(action,{nodeId}) {
+  onAction(action,args) {
     const NODE_CLICK = "onNodeClick";
     const CANVAS_CLICK = "onCanvasClick";
+    const DRAG_NODE = "onDragNode";
     const NODE = "node";
-
-    console.log("action",action);
-
+    const {nodeId,id} = args;
+    console.log(action)
     switch (action) {
       case NODE_CLICK:
         this.props.selectItem(nodeId,NODE)
@@ -51,13 +46,17 @@ class NodeCanvas extends React.Component {
       case CANVAS_CLICK:
         this.props.selectItem(null,null)
         break;
-      default:
+      case DRAG_NODE:
+        this.props.selectItem(id,NODE)
+        break;
+      default: 
         break;
     }
 
   }
   onSelectChild(nodeId, id) {
-    console.log(nodeId, id);
+    console.log(nodeId,id)
+    this.props.selectItem(id,"child")
     return;
   }
   onClickAddChild(id) {
@@ -83,8 +82,7 @@ class NodeCanvas extends React.Component {
             NodeInner: props =>
               NodeInner({
                 ...props,
-                onClickAddChild: this.onClickAddChild,
-                onSelectChild: this.onSelectChild
+                selectItem: this.onSelectChild
               })
           }}
         />
