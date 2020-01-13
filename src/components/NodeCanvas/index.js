@@ -17,7 +17,8 @@ function mapDispatchToProps(dispatch) {
   return {
     addNode: bindActionCreators(actions.addNode, dispatch),
     selectItem: bindActionCreators(actions.selectItem, dispatch),
-    addChildNode: bindActionCreators(actions.addChildNode, dispatch)
+    addChildNode: bindActionCreators(actions.addChildNode, dispatch),
+    editChildNode: bindActionCreators(actions.editChildNode, dispatch)
   };
 }
 

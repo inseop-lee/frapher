@@ -1,0 +1,25 @@
+{
+    "title":"random",
+    "type": "object",
+    "required": ["result","type","info"],
+    "properties": {
+        "result": { "type": "string" },
+        "type": {
+            "type": "string",
+            "title": "Job Type",
+            "default": "random",
+            "enum": ["database", "http","branch","control_message","control_tag_message","random","calculator"]
+        },
+        "info": {
+            "type": "object",
+            "required": ["array"],
+            "properties": {
+                "array": {
+                    "title": "Templates",
+                    "type": "array",
+                    "items":"string"
+                }
+            }
+        }
+    }
+}

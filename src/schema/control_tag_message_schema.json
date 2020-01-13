@@ -1,0 +1,21 @@
+{
+    "title":"control_tag_message",
+    "type": "object",
+    "required": ["result","type","info"],
+    "properties": {
+        "result": { "type": "string" },
+        "type": {
+            "type": "string",
+            "title": "Job Type",
+            "default": "control_tag_message",
+            "enum": ["database", "http","branch","control_message","control_tag_message","random","calculator"]
+        },
+        "info": {
+            "type": "object",
+            "required": ["ctrlKey"],
+            "properties": {
+                "ctrlKey": { "type": "string", "title": "Control Key"}
+            }
+        }
+    }
+}

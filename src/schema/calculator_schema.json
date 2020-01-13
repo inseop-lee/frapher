@@ -1,0 +1,34 @@
+{
+    "title":"calculator",
+    "type": "object",
+    "required": ["result","type","info"],
+    "properties": {
+        "result": { "type": "string" },
+        "type": {
+            "type": "string",
+            "title": "Job Type",
+            "default": "calculator",
+            "enum": ["database", "http","branch","control_message","control_tag_message","random","calculator"]
+        },
+        "info": {
+            "type": "object",
+            "required": ["expression","params"],
+            "properties": {
+                "expression": { "title": "Expression", "type": "string" },
+                "rational": {
+                    "title": "Is Rational",
+                    "type": "string",
+                    "enum": ["true","false"]
+                },
+                "scale": {
+                    "title": "Presicion Number",
+                    "type": "string",
+                    "pattern": "[0-9]+"
+                },
+                "params": {
+                    "type": "object"
+                }
+            }
+        }
+    }
+}
