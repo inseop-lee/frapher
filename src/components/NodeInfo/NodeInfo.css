@@ -1,5 +1,18 @@
 .nodeInfo {
-    padding: 1em
+    padding: 1em;
+}
+.nodeInfo-header{
+    padding: 0.5em;
+}
+
+.childList .text {
+    margin:0;
+}
+
+.childList .card {
+    border-radius:0;
+    border-left:0;
+    border-right:0;
 }
 
 .childList .card-header {
@@ -10,6 +23,72 @@
     border-bottom: 0;
 }
 
+
+.childList .card-header:hover {
+    cursor: pointer;
+}
+
 .childList .schema_form {
-    padding: 0.7em;
+    padding: 0 1.5em 1em 1.5em;
+}
+
+.childList fieldset{
+    width:100%;
+}
+.childList .form-group {
+    justify-content: space-between;
+    align-items: center;
+    display: flex;
+}
+
+.childList .form-group label { 
+    margin:0;
+    width:35%;
+    font-size:0.9em
+}
+
+.childList .form-group .field { 
+    margin-bottom: 0.5em
+}
+.childList .form-group h5,.childList .form-group h6 { 
+    margin:0;
+}
+
+.field-object {
+    margin-bottom: 0;
+    justify-content: space-between;
+}
+
+.array-title {
+    width:100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0;
+}
+
+.array-header, .object-header {
+    width:100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.5em
+}
+
+.array-container {
+ width:100%
+}
+
+.object-container {
+    width:100%;
+}
+
+.ap-key {
+    width:33%;
+    margin-right:2%;
+}
+
+.ap-value {
+    width:100%;
+    margin-right:2%;
 }

@@ -5,6 +5,7 @@
   "dependencies": {
     "@kunukn/react-collapse": "^2.2.7",
     "@mrblenny/react-flow-chart": "0.0.8",
+    "@primer/octicons-react": "^9.3.1",
     "@types/uuid": "^3.4.6",
     "bootstrap": "^4.4.1",
     "lodash": "^4.17.15",

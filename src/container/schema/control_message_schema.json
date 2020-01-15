@@ -3,7 +3,7 @@
     "type": "object",
     "required": ["result","type","info"],
     "properties": {
-        "result": { "type": "string" },
+        "result": { "title":"Result","type": "string" },
         "type": {
             "type": "string",
             "title": "Job Type",
@@ -11,13 +11,14 @@
             "enum": ["database", "http","branch","control_message","control_tag_message","random","calculator"]
         },
         "info": {
+            "title":"Info",
             "type": "object",
             "required": ["ctrlKey"],
             "properties": {
                 "required": {
                     "title": "Required Parameter",
-                    "type":"array",
-                    "items":"string"
+                    "type": "array",
+                    "items": {"type":"string"}
                 },
                 "ctrlKey": { "type": "string", "title": "Control Key"},
                 "code": {

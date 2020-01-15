@@ -1,62 +1,78 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import "./NodeInfo.css";
-import { Accordion, Badge, Card } from "react-bootstrap";
-import { useAccordionToggle } from "react-bootstrap/AccordionToggle";
-
-import Form from "react-jsonschema-form";
-import schema_dict from "../../schema";
-
-function CustomToggle({ child, eventKey, changeEvent }) {
-  const decoratedOnClick = useAccordionToggle(eventKey, () =>
-    changeEvent(eventKey)
-  );
-
+import { Accordion, Modal } from "react-bootstrap";
+import ChildCard from "./ChildCard";
+import {hasBranchChild} from "../../container/utils"
+function AlertModal({ isOpen, onClose, title, content }) {
   return (
-    <Card.Header onClick={decoratedOnClick}>
-      <span className="text">{child.id}</span>
-      <Badge variant="info">{child.data.type}</Badge>
-    </Card.Header>
+    <Modal show={isOpen} onHide={onClose}>
+      <Modal.Header closeButton>
+        <Modal.Title>{title}</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>{content}</Modal.Body>
+    </Modal>
   );
 }
 
-function NodeInfo({ nodes, selected, selectItem, editChildNode }) {
-  const node = nodes[selected.id];
+function Links({node}) {
+  return (
+    <div>
+    {
+      Object.entries(node.next).map(([key,value],index)=> (
+        <div key={index}>
+          <span>{key} : {value}</span>
+        </div>
+      ))
+    }
+    </div>
+  )
+}
 
-  const [event,setEvent] = useState(0)
-
+function NodeInfo({ rule, selected, selectItem, editChildNode }) {
+  console.log(rule)
+  const [isToastOpen, setToastOpen] = useState(false);
+  const nodes = rule.nodes
+  const node = nodes[selected.id]
   const onSubmit = ({ formData }, parentId, id) => {
-    console.log("Data submitted: ", formData);
+    setToastOpen(true);
     editChildNode(parentId, id, formData);
   };
 
-  const changeEvent = (eventKey) => {
-    setEvent(eventKey)
-  }
+  const isFinal = () => !node.next;
+  const isStart = () => selected.id === rule.nodes.start;
+  
 
   return (
-    <div className="nodeInfo">
-      <div className="header">
-        <h3>{node.id}</h3>
+    <div className="nodeInfo-container">
+      <AlertModal
+        isOpen={isToastOpen}
+        onClose={e => setToastOpen(false)}
+        title="info"
+        content="saved"
+      />
+      <div className="nodeInfo">
+        <h3>{selected.id} </h3>
+        { isStart() && <span>[start]</span>}
       </div>
-      <div className="childList">
+      {!isFinal() && 
+        <div className="nodeInfo">
+          <h4>Next</h4>
+          <Links node={node} />
+        </div>
+      }
+      <div className="childList nodeInfo">
+        <h4>Job List</h4>
         <Accordion defaultActiveKey="0">
-          {node.children &&
-            node.children.map((child, i) => {
+          {node.jobList.map((id, i) => {
               return (
-                <Card key={node.id + "/" + child.id}>
-                  <CustomToggle child={child} eventKey={i} changeEvent={changeEvent}/>
-                  <Accordion.Collapse eventKey={i}>
-                    <div className="schema_form">
-                    {event===i && 
-                      <Form
-                        schema={schema_dict[child.data.type]}
-                        onSubmit={e => onSubmit(e, node.id, child.id)}
-                        formData={child.data}
-                      />
-                    }
-                    </div>
-                  </Accordion.Collapse>
-                </Card>
+                <ChildCard
+                  key={id}
+                  parentId={selected.id}
+                  id={id}
+                  data={rule.children[id]}
+                  onSubmit={onSubmit}
+                  index={i}
+                />
               );
             })}
         </Accordion>

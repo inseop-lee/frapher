@@ -1,8 +1,11 @@
+import {cloneDeep} from "lodash"
 import React from "react";
 import * as actions from "@mrblenny/react-flow-chart/src/container/actions";
-import { FlowChart } from "@mrblenny/react-flow-chart";
-import NodeInner from "./NodeInner";
+
+import NodeInnerTemplate from "./NodeInnerTemplate";
 import AddChildInputModal from "../Common";
+import { FlowChart } from "@mrblenny/react-flow-chart";
+import {getChildDataSetById} from "../../container/utils"
 
 class NodeCanvas extends React.Component {
   constructor(props) {
@@ -12,16 +15,15 @@ class NodeCanvas extends React.Component {
         x: 0,
         y: 0
       },
-      nodes: this.props.nodes,
-      links: this.props.links,
-      selected: this.props.selected,
+      nodes: cloneDeep(this.props.nodes),
+      links: cloneDeep(this.props.links),
+      selected: cloneDeep(this.props.selected),
       hovered: {},
       isOpenAddChild: false
     };
     this.onClickAddChild = this.onClickAddChild.bind(this)
     this.onSelectChild = this.onSelectChild.bind(this)
     this.onSubmit = this.onSubmit.bind(this)
-
     this.callbacks = Object.keys(actions).reduce((obj,key,idx)=>{
       obj[key] = (...args) =>{
           this.onAction(key,...args);
@@ -29,16 +31,14 @@ class NodeCanvas extends React.Component {
       };
       return obj;
     },{});
-
   }
-  
+
   onAction(action,args) {
     const NODE_CLICK = "onNodeClick";
     const CANVAS_CLICK = "onCanvasClick";
     const DRAG_NODE = "onDragNode";
     const NODE = "node";
     const {nodeId,id} = args;
-    console.log(action)
     switch (action) {
       case NODE_CLICK:
         this.props.selectItem(nodeId,NODE)
@@ -52,10 +52,9 @@ class NodeCanvas extends React.Component {
       default: 
         break;
     }
-
   }
+
   onSelectChild(nodeId, id) {
-    console.log(nodeId,id)
     this.props.selectItem(id,"child")
     return;
   }
@@ -78,10 +77,17 @@ class NodeCanvas extends React.Component {
         <FlowChart
           chart={this.state}
           callbacks={this.callbacks}
+          config={{
+            portConfig: {
+              to:"bottom",
+              from:"top"
+            }
+          }}
           Components={{
             NodeInner: props =>
-              NodeInner({
+              NodeInnerTemplate({
                 ...props,
+                childDataSet: getChildDataSetById(props.node.id,this.props.rule),
                 selectItem: this.onSelectChild
               })
           }}

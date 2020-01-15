@@ -5,7 +5,7 @@ import "../bootstrap.min.css";
 import NodeCanvas from "./NodeCanvas";
 import NodeInfo from "./NodeInfo";
 
-function FlowContainer({ nodes, selected, selectItem }) {
+function FlowContainer({ nodes, links, selected, selectItem }) {
   return (
     <div id="container">
       <SplitterLayout id="container" percentage secondaryInitialSize={35}>
@@ -14,10 +14,7 @@ function FlowContainer({ nodes, selected, selectItem }) {
         </div>
         {selected.type === "node" && (
             <NodeInfo
-            id="sidebar"
-            nodes={nodes}
-            selected={selected}
-            selectItem={selectItem}
+              id="sidebar"
             />
         )}
       </SplitterLayout>

@@ -3,7 +3,7 @@
     "type": "object",
     "required": ["result","type","info"],
     "properties": {
-        "result": { "type": "string" },
+        "result": { "title":"Result","type": "string" },
         "type": {
             "type": "string",
             "title": "Job Type",
@@ -11,6 +11,7 @@
             "enum": ["database", "http","branch","control_message","control_tag_message","random","calculator"]
         },
         "info": {
+            "title":"Info",
             "type": "object",
             "required": ["expression","params"],
             "properties": {
@@ -21,12 +22,14 @@
                     "enum": ["true","false"]
                 },
                 "scale": {
-                    "title": "Presicion Number",
+                    "title": "Presicion",
                     "type": "string",
                     "pattern": "[0-9]+"
                 },
                 "params": {
-                    "type": "object"
+                    "title": "Parameters",
+                    "type": "object",
+                    "additionalProperties":{"type":"string"}
                 }
             }
         }

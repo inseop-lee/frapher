@@ -4,12 +4,12 @@ import { actionCreators as actions } from "../../container/reducer";
 import NodeCanvas from "./NodeCanvas";
 
 function mapStateToProps(state) {
-  const { nodes, links, selected, selectedChild } = state;
+  const { nodes, links, selected,rule} = state;
   return {
     nodes,
     links,
     selected,
-    selectedChild
+    rule
   };
 }
 

@@ -1,20 +1,24 @@
 {
-    "title":"control_tag_message",
+    "title":"random",
     "type": "object",
     "required": ["result","type","info"],
     "properties": {
-        "result": { "type": "string" },
+        "result": { "title":"Result","type": "string" },
         "type": {
             "type": "string",
-            "title": "Job Type",
-            "default": "control_tag_message",
+            "default": "random",
             "enum": ["database", "http","branch","control_message","control_tag_message","random","calculator"]
         },
         "info": {
+            "title":"Info",
             "type": "object",
-            "required": ["ctrlKey"],
+            "required": ["array"],
             "properties": {
-                "ctrlKey": { "type": "string", "title": "Control Key"}
+                "array": {
+                    "title": "Templates",
+                    "type": "array",
+                    "items": {"type":"string"}
+                }
             }
         }
     }

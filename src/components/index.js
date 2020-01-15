@@ -4,22 +4,20 @@ import { actionCreators as actions } from "../container/reducer";
 import FlowContainer from "./FlowContainer";
 
 function mapStateToProps(state) {
-    const { nodes, links, selected, selectedChild } = state;
-    return {
-      nodes,
-      links,
-      selected,
-      selectedChild
-    };
-  }
-  
-  function mapDispatchToProps(dispatch) {
-    return {
-      addNode: bindActionCreators(actions.addNode, dispatch),
-      selectItem: bindActionCreators(actions.selectItem, dispatch),
-      addChildNode: bindActionCreators(actions.addChildNode, dispatch),
-      editChildNode: bindActionCreators(actions.editChildNode, dispatch)
-    };
-  }
-  
-  export default connect(mapStateToProps, mapDispatchToProps)(FlowContainer);
+  const { selected,rule} = state;
+  return {
+    selected,
+    rule
+  };
+}
+
+function mapDispatchToProps(dispatch) {
+  return {
+    addNode: bindActionCreators(actions.addNode, dispatch),
+    selectItem: bindActionCreators(actions.selectItem, dispatch),
+    addChildNode: bindActionCreators(actions.addChildNode, dispatch),
+    editChildNode: bindActionCreators(actions.editChildNode, dispatch)
+  };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(FlowContainer);

@@ -4,14 +4,12 @@ import { actionCreators as actions } from "../../container/reducer";
 import NodeInfo from "./NodeInfo";
 
 function mapStateToProps(state) {
-    const { nodes, links, selected, selectedChild } = state;
-    return {
-      nodes,
-      links,
-      selected,
-      selectedChild
-    };
-  }
+  const { selected,rule} = state;
+  return {
+    selected,
+    rule
+  };
+}
   
   function mapDispatchToProps(dispatch) {
     return {

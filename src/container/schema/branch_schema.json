@@ -1,28 +1,23 @@
 {
-    "title":"internal",
+    "title":"branch",
     "type": "object",
-    "required": ["result","type","source","info"],
+    "required": ["result","type","info"],
     "properties": {
-        "result": { "type": "string" },
+        "result": { "title":"Result","type": "string"},
         "type": {
             "type": "string",
             "title": "Job Type",
-            "default":"database",
+            "default": "branch",
             "enum": ["database", "http","branch","control_message","control_tag_message","random","calculator"]
         },
-        "source": { "type": "string" },
         "info": {
+            "title":"Info",
             "type": "object",
-            "required": ["fields","condition"],
+            "required": ["condition"],
             "properties": {
-                "fields":{
-                    "type":"array",
-                    "title":"Internal table name",
-                    "items":{ "type" : "string" }
-                },
                 "condition": {
                     "type": "array",
-                    "title": "Filter query",
+                    "title": "Branch Condition",
                     "minItems": 1,
                     "items": {
                         "type": "object",
