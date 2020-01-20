@@ -1,0 +1,325 @@
+{
+    "type": "object",
+    "oneOf" : [
+        {
+            "title":"branch",
+            "type": "object",
+            "required": ["result","type","info"],
+            "properties": {
+                "result": { "title":"Result","type": "string"},
+                "type": {
+                    "type": "string",
+                    "title": "Job Type",
+                    "default": "branch",
+                    "enum": ["branch"]
+                },
+                "info": {
+                    "title":"Info",
+                    "type": "object",
+                    "required": ["condition"],
+                    "properties": {
+                        "condition": {
+                            "type": "array",
+                            "title": "Branch Condition",
+                            "minItems": 1,
+                            "items": {
+                                "type": "object",
+                                "required": ["key","value","exp"],
+                                "properties": {
+                                    "key": { "type": "string", "default": "" },
+                                    "value": { "type": "string", "default": "" },
+                                    "exp": { "type": "string", "enum": ["eq","ne","lt","le","gt","ge","in","null","notNull"] }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "title":"control_message",
+            "type": "object",
+            "required": ["result","type","info"],
+            "properties": {
+                "result": { "title":"Result","type": "string" },
+                "type": {
+                    "type": "string",
+                    "title": "Job Type",
+                    "default": "control_message",
+                    "enum": ["control_message"]
+                },
+                "info": {
+                    "title":"Info",
+                    "type": "object",
+                    "required": ["ctrlKey"],
+                    "properties": {
+                        "required": {
+                            "title": "Required Parameter",
+                            "type": "array",
+                            "items": {"type":"string"}
+                        },
+                        "ctrlKey": { "type": "string", "title": "Control Key"},
+                        "code": {
+                            "type": "object",
+                            "required" : ["key","value"],
+                            "properties": {
+                                "key": {"type":"string"},
+                                "value": {"type":"string"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "title":"calculator",
+            "type": "object",
+            "required": ["result","type","info"],
+            "properties": {
+                "result": { "title":"Result","type": "string" },
+                "type": {
+                    "type": "string",
+                    "title": "Job Type",
+                    "default": "calculator",
+                    "enum": ["calculator"]
+                },
+                "info": {
+                    "title":"Info",
+                    "type": "object",
+                    "required": ["expression","params"],
+                    "properties": {
+                        "expression": { "title": "Expression", "type": "string" },
+                        "rational": {
+                            "title": "Is Rational",
+                            "type": "string",
+                            "enum": ["true","false"]
+                        },
+                        "scale": {
+                            "title": "Presicion",
+                            "type": "string",
+                            "pattern": "[0-9]+"
+                        },
+                        "params": {
+                            "title": "Parameters",
+                            "type": "object",
+                            "additionalProperties":{"type":"string"}
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "title":"control_tag_message",
+            "type": "object",
+            "required": ["result","type","info"],
+            "properties": {
+                "result": { "title":"Result","type": "string" },
+                "type": {
+                    "type": "string",
+                    "title": "Job Type",
+                    "default": "control_tag_message",
+                    "enum": ["control_tag_message"]
+                },
+                "info": {
+                    "title":"Info",
+                    "type": "object",
+                    "required": ["ctrlKey"],
+                    "properties": {
+                        "ctrlKey": { "type": "string", "title": "Control Key"}
+                    }
+                }
+            }
+        },
+        {
+            "title":"database",
+            "type": "object",
+            "required": ["result","type","source","info"],
+            "properties": {
+                "result": { "type": "string" },
+                "type": {
+                    "type": "string",
+                    "title": "Job Type",
+                    "default":"database",
+                    "enum": ["database"]
+                },
+                "source": { "type": "string" },
+                "info": {
+                    "title":"Info",
+                    "type": "object",
+                    "required": ["fields","condition"],
+                    "properties": {
+                        "fields":{
+                            "type":"array",
+                            "title":"Table Name",
+                            "items":{ "type" : "string" }
+                        },
+                        "condition": {
+                            "type": "array",
+                            "title": "Condition",
+                            "minItems": 1,
+                            "items": {
+                                "type": "object",
+                                "required": ["key","value","exp"],
+                                "properties": {
+                                    "key": { "type": "string", "default": "" },
+                                    "value": { "type": "string", "default": "" },
+                                    "exp": { "type": "string", "enum": ["eq","ne","lt","le","gt","ge","in","null","notNull"] }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "title": "http",
+            "type": "object",
+            "required": [
+                "result",
+                "type",
+                "source",
+                "info"
+            ],
+            "properties": {
+                "result": {
+                    "title": "Result",
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string",
+                    "default": "http",
+                    "enum": ["http"]
+                },
+                "source": {
+                    "title": "Data Source",
+                    "type": "string",
+                    "enum": [
+                        "device/snapshot",
+                        "custom"
+                    ]
+                },
+                "info": {
+                    "title": "Info",
+                    "type": "object",
+                    "required": [
+                        "method",
+                        "headers"
+                    ],
+                    "properties": {
+                        "port": {
+                            "title": "Port number",
+                            "type": "string",
+                            "examples": [
+                                "443",
+                                "80"
+                            ],
+                            "pattern": "[0-9]{1,5}"
+                        },
+                        "url": {
+                            "title": "URL (without domain)",
+                            "type": "object",
+                            "required": [
+                                "path",
+                                "parameter"
+                            ],
+                            "properties": {
+                                "path": {
+                                    "type": "string"
+                                },
+                                "parameter": {
+                                    "type": "object",
+                                    "additionalProperties": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        },
+                        "method": {
+                            "title": "HTTP Method",
+                            "type": "string",
+                            "enum": [
+                                "GET",
+                                "POST",
+                                "DELETE",
+                                "PUT"
+                            ]
+                        },
+                        "headers": {
+                            "title": "Request Header",
+                            "type": "object",
+                            "required": [
+                                "Content-Type",
+                                "Accept",
+                                "x-country-code",
+                                "x-service-phase",
+                                "x-api-key",
+                                "x-message-id"
+                            ],
+                            "properties": {
+                                "Content-Type": {
+                                    "type": "string",
+                                    "default": "application/json;charset=UTF-8"
+                                },
+                                "Accept": {
+                                    "type": "string",
+                                    "default": "application/json"
+                                },
+                                "x-country-code": {
+                                    "type": "string",
+                                    "default": "$.countryCode"
+                                },
+                                "x-service-phase": {
+                                    "type": "string",
+                                    "default": "$.servicePhase"
+                                },
+                                "x-api-key": {
+                                    "type": "string",
+                                    "default": "VGhpblEyLjAgU0VSVklDRQ=="
+                                },
+                                "x-message-id": {
+                                    "type": "string",
+                                    "default": "$.messageId"
+                                }
+                            }
+                        },
+                        "parameters": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "body": {
+                            "type": "object"
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "title":"random",
+            "type": "object",
+            "required": ["result","type","info"],
+            "properties": {
+                "result": { "title":"Result","type": "string" },
+                "type": {
+                    "type": "string",
+                    "default": "random",
+                    "enum": ["random"]
+                },
+                "info": {
+                    "title":"Info",
+                    "type": "object",
+                    "required": ["array"],
+                    "properties": {
+                        "array": {
+                            "title": "Templates",
+                            "type": "array",
+                            "minItems": 1,
+                            "items": {"type":"string"}
+                        }
+                    }
+                }
+            }
+        }
+    ]
+}

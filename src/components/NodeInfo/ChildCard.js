@@ -9,7 +9,7 @@ import ObjectFieldTemplate from "./ObjectFieldTemplate";
 import AdditionalPropertiesTemplate from "./AdditionalPropertiesTemplate";
 import {TextTemplate,SelectTemplate} from "./InputTemplate";
 
-import schema_dict from "../../container/schema";
+import job from "../../container/schema";
 
 function AccordionItem({ id, type, eventKey, changeEvent }) {
     const decoratedOnClick = useAccordionToggle(eventKey, () =>
@@ -25,6 +25,14 @@ function AccordionItem({ id, type, eventKey, changeEvent }) {
   }
 
   const uiSchema = {
+    oneOf: {
+      "ui:options" :{
+        title:false
+      }
+    },
+    type: {
+      "ui:widget": "hidden"
+    },
     info: {
       params: {
         additionalProperties: {
@@ -65,8 +73,8 @@ function ChildCard({ parentId, id, data, onSubmit, index }) {
                   <div className="schema_form">
                     {event === index && (
                       <Form
-                        schema={schema_dict[data.type]}
-                        onSubmit={e => onSubmit(e, parentId, id)}
+                        schema={job}
+                        onSubmit={e => onSubmit(e, id)}
                         formData={data}
                         uiSchema={uiSchema}
                         widgets={{TextWidget:TextTemplate,SelectWidget:SelectTemplate}}

@@ -32,10 +32,9 @@ function addChildNode(parentId, id, itemType) {
   };
 }
 
-function editChildNode(parentId, id, data) {
+function editChildNode(id, data) {
   return {
     type: EDIT_CHILD_NODE,
-    parentId,
     id,
     data
   };
@@ -51,111 +50,6 @@ function selectChildNode(parentId, id) {
 // Reducer
 
 const initialState = {
-  nodes: {
-    node1: {
-      id: "node1",
-      type: "left-right",
-      position: {
-        x: 50,
-        y: 270
-      },
-      ports: {
-        out: {
-          id: "out",
-          type: "right"
-        }
-      }
-    },
-    node2: {
-      id: "node2",
-      type: "left-right",
-      position: {
-        x: 380,
-        y: 330
-      },
-      ports: {
-        in: {
-          id: "in",
-          type: "left"
-        },
-        out: {
-          id: "out",
-          type: "right"
-        }
-      }
-    },
-    node3: {
-      id: "node3",
-      type: "left-right",
-      position: {
-        x: 710,
-        y: 260
-      },
-      ports: {
-        in: {
-          id: "in",
-          type: "left"
-        },
-        out: {
-          id: "out",
-          type: "right"
-        }
-      }
-    },
-    node4: {
-      id: "node4",
-      type: "left-right",
-      position: {
-        x: 710,
-        y: 400
-      },
-      ports: {
-        in: {
-          id: "in",
-          type: "left"
-        },
-        out: {
-          id: "out",
-          type: "right"
-        }
-      }
-    }
-  },
-  links: {
-    link1: {
-      id: "link1",
-      from: {
-        nodeId: "node1",
-        portId: "out"
-      },
-      to: {
-        nodeId: "node2",
-        portId: "in"
-      }
-    },
-    link2: {
-      id: "link2",
-      from: {
-        nodeId: "node2",
-        portId: "out"
-      },
-      to: {
-        nodeId: "node3",
-        portId: "in"
-      }
-    },
-    link3: {
-      id: "link3",
-      from: {
-        nodeId: "node2",
-        portId: "out"
-      },
-      to: {
-        nodeId: "node4",
-        portId: "in"
-      }
-    }
-  },
   selected: { type: "node", id: "node1" },
   selectedChild: {},
   rule: {
@@ -255,7 +149,7 @@ const initialState = {
   }
 };
 
-function nodeItems(state = initialState, action) {
+function nodeItem(state = initialState, action) {
   switch (action.type) {
     case ADD_NODE:
       return applyAddNode(state, action);
@@ -333,12 +227,20 @@ function applySelectChildNode(state, action) {
   };
 }
 
-function applyEditChildNode(state, { parentId, id, data }) {
-  const nodes = state.nodes;
-  const target = nodes[parentId].children.find(obj => obj.id === id);
-  target.data = data;
-  return state;
+function applyEditChildNode(state, { id, data }) {
+
+  return {
+    ...state,
+    rule: {
+      ...state.rule,
+      children: {
+        ...state.rule.children,
+        [id]:data
+      }
+    }
+  };
 }
+
 // Exports
 const actionCreators = {
   addNode,
@@ -350,4 +252,4 @@ const actionCreators = {
 export { actionCreators };
 
 // Default
-export default nodeItems;
+export default nodeItem;

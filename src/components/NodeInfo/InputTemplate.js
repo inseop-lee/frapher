@@ -144,7 +144,13 @@ export function SelectTemplate(props) {
   } = props;
   const { enumOptions, enumDisabled } = options;
   const emptyValue = multiple ? [] : "";
+  
+  console.log(id)
   return (
+    <div className="select">
+    { id === "root_anyof_select" &&
+      <label className="control-label">type*</label>
+    }
     <Form.Control
       as="select"
       size="sm"
@@ -186,5 +192,6 @@ export function SelectTemplate(props) {
         );
       })}
     </Form.Control>
+    </div>
   );
 }

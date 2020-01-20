@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from "react"
 import { Form, Modal, Button,   Col } from "react-bootstrap"
+import {bindActionCreators} from "redux";
+import { connect } from 'react-redux';
+import {actionCreators as nodeItemActions} from "../../store/modules/nodeItem";
 
 function AddChildInputModal({ isOpen, parentId, onSubmit, addChildNode }) {
     const [modal, setModal] = useState(isOpen);
@@ -63,4 +66,12 @@ function AddChildInputModal({ isOpen, parentId, onSubmit, addChildNode }) {
     );
 }
 
-export default AddChildInputModal;
+export default connect(
+    ({nodeItem}) => ({
+      selected : nodeItem.selected,
+      rule: nodeItem.rule
+    }), 
+    (dispatch) => ({
+        NodeItemActions: bindActionCreators(nodeItemActions, dispatch)
+    })
+  )(AddChildInputModal);

@@ -1,11 +1,8 @@
 import React from "react";
 import "./App.css";
 import { Provider } from "react-redux";
-import { createStore } from "redux";
-import nodeItems from "./container/reducer";
-import FlowContainer from "./components";
-
-let store = createStore(nodeItems);
+import FlowContainer from "./components/FlowContainer";
+import store from "./store"
 
 function App(props) {
   return (

@@ -15,7 +15,6 @@ function NodeInnerTemplate({ node, config, childDataSet, selectItem }) {
 }
 
 export function ChildNodes({ node, config, childDataSet, selectItem }) {
-  console.log(Object.entries(childDataSet))
   return (
     <ListGroup>
       {Object.entries(childDataSet).map(([id, data]) => {

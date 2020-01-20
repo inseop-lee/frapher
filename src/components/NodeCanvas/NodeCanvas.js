@@ -3,20 +3,26 @@ import React from "react";
 import * as actions from "@mrblenny/react-flow-chart/src/container/actions";
 
 import NodeInnerTemplate from "./NodeInnerTemplate";
-import AddChildInputModal from "../Common";
+import AddChildInputModal from "../Common/AddChildInputModal";
 import { FlowChart } from "@mrblenny/react-flow-chart";
-import {getChildDataSetById} from "../../container/utils"
+import {getChildDataSetById, initChart} from "../../container/utils"
+import {bindActionCreators} from "redux";
+import { connect } from 'react-redux';
+import {actionCreators as nodeItemActions} from "../../store/modules/nodeItem";
+
 
 class NodeCanvas extends React.Component {
   constructor(props) {
     super(props);
+    console.log('NodeCanvas')
+    const chart = initChart(this.props.rule.nodes)
     this.state = {
       offset: {
         x: 0,
         y: 0
       },
-      nodes: cloneDeep(this.props.nodes),
-      links: cloneDeep(this.props.links),
+      nodes: chart.nodes,
+      links: chart.links,
       selected: cloneDeep(this.props.selected),
       hovered: {},
       isOpenAddChild: false
@@ -38,24 +44,28 @@ class NodeCanvas extends React.Component {
     const CANVAS_CLICK = "onCanvasClick";
     const DRAG_NODE = "onDragNode";
     const NODE = "node";
-    const {nodeId,id} = args;
+    const {nodeId} = args;
     switch (action) {
       case NODE_CLICK:
-        this.props.selectItem(nodeId,NODE)
+        this.props.NodeItemActions.selectItem(nodeId,NODE)
         break;
       case CANVAS_CLICK:
-        this.props.selectItem(null,null)
+        this.props.NodeItemActions.selectItem(null,null)
         break;
       case DRAG_NODE:
-        this.props.selectItem(id,NODE)
+        console.log(args)
         break;
       default: 
         break;
     }
   }
 
+  componentWillReceiveProps(nextProps) {
+    console.log(nextProps);
+  }
+
   onSelectChild(nodeId, id) {
-    this.props.selectItem(id,"child")
+    this.props.NodeItemActions.selectItem(id,"child")
     return;
   }
   onClickAddChild(id) {
@@ -97,4 +107,12 @@ class NodeCanvas extends React.Component {
   }
 }
 
-export default NodeCanvas;
+export default connect(
+  ({nodeItem}) => ({
+    selected : nodeItem.selected,
+    rule: nodeItem.rule
+  }), 
+  (dispatch) => ({
+    NodeItemActions: bindActionCreators(nodeItemActions, dispatch)
+  })
+)(NodeCanvas);

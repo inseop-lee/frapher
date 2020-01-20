@@ -2,6 +2,7 @@ import React from "react";
 
 import Octicon, { iconsByName } from "@primer/octicons-react";
 import { Button } from "react-bootstrap";
+import {JobType} from "../../container/utils"
 
 function ObjectFieldTemplate({
   TitleField,
@@ -10,12 +11,14 @@ function ObjectFieldTemplate({
   description,
   schema,
   onAddClick,
-  formContext
+  formContext,
+  uiSchema
 }) {
   return (
     <div className="object-container">
+    {!Object.values(JobType).find(element => element === title) &&
       <div className="object-header">
-        <TitleField title={title} />
+          <TitleField title={title} />
         {schema.additionalProperties && (
           <Button
             onClick={onAddClick(schema)}
@@ -27,10 +30,13 @@ function ObjectFieldTemplate({
           </Button>
         )}
       </div>
+        }
       <div>
-        {properties.map(prop => (
+        {properties.map(prop => { 
+          return (
           <div key={prop.content.key}>{prop.content}</div>
-        ))}
+        )}
+        )}
       </div>
     </div>
   );

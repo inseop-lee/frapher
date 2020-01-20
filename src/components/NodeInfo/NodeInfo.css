@@ -31,14 +31,25 @@
 .childList .schema_form {
     padding: 0 1.5em 1em 1.5em;
 }
-
-.childList fieldset{
-    width:100%;
-}
-.childList .form-group {
+.childList .select {
     justify-content: space-between;
     align-items: center;
     display: flex;
+    width:100%;
+}
+.childList fieldset{
+    width:100%;
+}
+.childList .field-object .form-group {
+    justify-content: space-between;
+    align-items: center;
+    display: flex;
+}
+
+.object-header legend {
+    font-size:1.2rem;
+    margin-bottom: 0;
+    margin-top: 0.5em;
 }
 
 .childList .form-group label { 
@@ -46,12 +57,15 @@
     width:35%;
     font-size:0.9em
 }
-
 .childList .form-group .field { 
     margin-bottom: 0.5em
 }
 .childList .form-group h5,.childList .form-group h6 { 
     margin:0;
+}
+
+.childList .form-group {
+    margin-bottom:0.5em;
 }
 
 .field-object {
@@ -72,7 +86,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 0.5em
+    margin-bottom:0.5em;
 }
 
 .array-container {

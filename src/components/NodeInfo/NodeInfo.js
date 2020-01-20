@@ -2,7 +2,10 @@ import React, { useState } from "react";
 import "./NodeInfo.css";
 import { Accordion, Modal } from "react-bootstrap";
 import ChildCard from "./ChildCard";
-import {hasBranchChild} from "../../container/utils"
+import {bindActionCreators} from "redux";
+import { connect } from 'react-redux';
+import {actionCreators as nodeItemActions} from "../../store/modules/nodeItem";
+
 function AlertModal({ isOpen, onClose, title, content }) {
   return (
     <Modal show={isOpen} onHide={onClose}>
@@ -28,39 +31,37 @@ function Links({node}) {
   )
 }
 
-function NodeInfo({ rule, selected, selectItem, editChildNode }) {
-  console.log(rule)
+function NodeInfo({ rule, selected, selectItem, NodeItemActions }) {
   const [isToastOpen, setToastOpen] = useState(false);
   const nodes = rule.nodes
   const node = nodes[selected.id]
-  const onSubmit = ({ formData }, parentId, id) => {
+  const onSubmit = ({ formData }, id) => {
     setToastOpen(true);
-    editChildNode(parentId, id, formData);
+    NodeItemActions.editChildNode(id, formData);
   };
 
   const isFinal = () => !node.next;
   const isStart = () => selected.id === rule.nodes.start;
-  
 
   return (
-    <div className="nodeInfo-container">
+    <ul className="nodeInfo-container">
       <AlertModal
         isOpen={isToastOpen}
         onClose={e => setToastOpen(false)}
         title="info"
         content="saved"
       />
-      <div className="nodeInfo">
+      <li className="nodeInfo">
         <h3>{selected.id} </h3>
         { isStart() && <span>[start]</span>}
-      </div>
+      </li>
       {!isFinal() && 
-        <div className="nodeInfo">
+        <li className="nodeInfo">
           <h4>Next</h4>
           <Links node={node} />
-        </div>
+        </li>
       }
-      <div className="childList nodeInfo">
+      <li className="childList nodeInfo">
         <h4>Job List</h4>
         <Accordion defaultActiveKey="0">
           {node.jobList.map((id, i) => {
@@ -76,9 +77,17 @@ function NodeInfo({ rule, selected, selectItem, editChildNode }) {
               );
             })}
         </Accordion>
-      </div>
-    </div>
+      </li>
+    </ul>
   );
 }
 
-export default NodeInfo;
+export default connect(
+  ({nodeItem}) => ({
+    selected : nodeItem.selected,
+    rule: nodeItem.rule
+  }), 
+  (dispatch) => ({
+    NodeItemActions: bindActionCreators(nodeItemActions, dispatch)
+  })
+)(NodeInfo);
