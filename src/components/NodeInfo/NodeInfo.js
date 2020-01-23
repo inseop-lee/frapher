@@ -1,12 +1,11 @@
 import React, { useState } from "react";
 import "./NodeInfo.css";
-import {Accordion,Modal,Table,OverlayTrigger,Tooltip,Button,Form,ListGroup} from "react-bootstrap";
+import {Accordion,Modal,OverlayTrigger,Tooltip,Button,ListGroup} from "react-bootstrap";
 import ChildCard from "./ChildCard";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import { actionCreators as nodeItemActions } from "../../store/modules/nodeItem";
 import { getBranchCondition } from "../../container/utils";
-import { MdSave, MdEdit } from "react-icons/md";
 
 function AlertModal({ isOpen, onClose, title, content }) {
   return (
