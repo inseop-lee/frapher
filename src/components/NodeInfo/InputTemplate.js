@@ -144,8 +144,6 @@ export function SelectTemplate(props) {
   } = props;
   const { enumOptions, enumDisabled } = options;
   const emptyValue = multiple ? [] : "";
-  
-  console.log(id)
   return (
     <div className="select">
     { id === "root_anyof_select" &&

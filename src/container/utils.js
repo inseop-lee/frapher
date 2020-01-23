@@ -10,6 +10,18 @@ export const JobType = {
   FEEDBACK: "feedback/response"
 };
 
+export function getBranchCondition(rule,nodeId) {
+  let branchCondition;
+  const node = rule.nodes[nodeId]
+  node.jobList.forEach((id) => {
+    if (rule.children[id].type === JobType.BRANCH) {
+      branchCondition = (rule.children[id].info.condition)
+      return;
+    }
+  })
+  return branchCondition ? branchCondition : [];
+}
+
 export function getChildDataSetById(nodeId, rule) {
   const children = rule.nodes[nodeId].jobList;
   const filtered = Object.keys(rule.children)

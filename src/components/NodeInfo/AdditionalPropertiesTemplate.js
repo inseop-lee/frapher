@@ -1,6 +1,6 @@
 import React from "react";
 
-import Octicon, { iconsByName } from "@primer/octicons-react";
+import { MdClose } from "react-icons/md";
 import { Button, Form } from "react-bootstrap";
 
 // function IconButton(props) {
@@ -42,13 +42,13 @@ function AdditionalPropertiesTemplate(props) {
       />
       <div className="ap-value">{children}</div>
         <Button
-          variant="danger"
+          variant="outline-danger"
           className="array-item-remove"
           disabled={disabled || readonly}
           onClick={onDropPropertyClick(label)}
           size="sm"
         >
-          <Octicon icon={iconsByName["x"]} />
+          <MdClose/>
         </Button>
     </div>
   );

@@ -1,7 +1,7 @@
 import React from "react";
 
-import Octicon, { iconsByName } from "@primer/octicons-react";
-import { Button, ButtonGroup, ListGroup } from "react-bootstrap";
+import { MdAdd,MdClose } from "react-icons/md";
+import { Button, ListGroup } from "react-bootstrap";
 
 function ArrayFieldTemplate({ title, items, canAdd, onAddClick }) {
   return (
@@ -10,12 +10,12 @@ function ArrayFieldTemplate({ title, items, canAdd, onAddClick }) {
         <h5>{title}</h5>
         {canAdd && (
           <Button
-            variant="success"
+            variant="outline-success"
             className="array-add-item"
             size="sm"
             onClick={onAddClick}
           >
-            <Octicon icon={iconsByName["plus"]} />
+            <MdAdd/>
           </Button>
         )}
       </div>
@@ -25,34 +25,13 @@ function ArrayFieldTemplate({ title, items, canAdd, onAddClick }) {
           <ListGroup.Item key={element.key} className={element.className}>
             <div className="array-title">
                 <h6>{title} #{index+1}</h6>
-                <ButtonGroup size="sm" className="">
-                  <Button
-                    variant="light"
-                    disabled={!element.hasMoveUp}
-                    onClick={element.onReorderClick(
-                      element.index,
-                      element.index - 1
-                    )}
-                  >
-                    <Octicon icon={iconsByName["arrow-up"]} />
-                  </Button>
-                  <Button
-                    variant="light"
-                    disabled={!element.hasMoveDown}
-                    onClick={element.onReorderClick(
-                      element.index,
-                      element.index + 1
-                    )}
-                  >
-                    <Octicon icon={iconsByName["arrow-down"]} />
-                  </Button>
-                  <Button
-                    onClick={element.onDropIndexClick(element.index)}
-                    variant="danger"
-                  >
-                    <Octicon icon={iconsByName["x"]} />
-                  </Button>
-                </ButtonGroup>
+                <Button
+                  onClick={element.onDropIndexClick(element.index)}
+                  variant="outline-danger"
+                  size="sm"
+                >
+                  <MdClose/>
+                </Button>
             </div>
 
             <div>{element.children}</div>

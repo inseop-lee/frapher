@@ -1,8 +1,8 @@
 import React from "react";
 
-import Octicon, { iconsByName } from "@primer/octicons-react";
 import { Button } from "react-bootstrap";
 import {JobType} from "../../container/utils"
+import { MdAdd } from "react-icons/md";
 
 function ObjectFieldTemplate({
   TitleField,
@@ -22,11 +22,11 @@ function ObjectFieldTemplate({
         {schema.additionalProperties && (
           <Button
             onClick={onAddClick(schema)}
-            variant="success"
+            variant="outline-success"
             className="object-add-item"
             size="sm"
           >
-            <Octicon icon={iconsByName["plus"]} />
+            <MdAdd />
           </Button>
         )}
       </div>

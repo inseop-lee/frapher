@@ -1,7 +1,6 @@
 import React from "react";
 import SplitterLayout from "react-splitter-layout";
 import "react-splitter-layout/lib/index.css";
-import "../bootstrap.min.css";
 import NodeCanvas from "./NodeCanvas/NodeCanvas";
 import NodeInfo from "./NodeInfo/NodeInfo";
 import {bindActionCreators} from "redux";

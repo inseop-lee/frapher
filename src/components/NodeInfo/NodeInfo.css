@@ -1,8 +1,8 @@
 .nodeInfo {
-    padding: 1em;
+    padding: 0.7em 1em 0.5em 0.7em;
 }
 .nodeInfo-header{
-    padding: 0.5em;
+    padding: 0;
 }
 
 .childList .text {
@@ -49,7 +49,6 @@
 .object-header legend {
     font-size:1.2rem;
     margin-bottom: 0;
-    margin-top: 0.5em;
 }
 
 .childList .form-group label { 
@@ -105,4 +104,50 @@
 .ap-value {
     width:100%;
     margin-right:2%;
+}
+
+.nextnode {
+    width:100%;
+    margin-bottom:0;
+}
+
+.nextnode th {
+    width:27%;
+}
+
+.nextnode td {
+    vertical-align: middle;
+}
+
+.branch-checkbox {
+    margin-right: 0 !important;
+}
+
+.branch-checkbox input {
+    margin-right: 0 !important;
+}
+
+.nextnode-item {
+    width:100%;
+    display: flex !important;
+    align-items: center;
+    padding: 0.3em;
+}
+.nextnode-item h6 {
+    margin:0;
+    border-right: 1px solid #aaa;
+    padding-right: 1em;
+}
+
+.nextnode-item-key {
+    width:100%;
+    padding-left: 1em;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.nextnode-item-key div {
+    display: flex;
+    align-items: center;
 }
