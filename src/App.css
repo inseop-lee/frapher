@@ -26,44 +26,6 @@ html,body
     background-color: transparent !important;
 }
 
-.node {
-    cursor: auto;
-    border-radius: 0.7em !important;
-}
-
-.node .card-title {
-    margin: 0.5em 0 0.75em 0.5em;
-}
-
-.node .card-body {
-    padding: 0 0.4em 0.4em 0.4em;
-}
-
-.node .list-group {
-    margin-bottom: 0.3em
-}
-
-.node .list-group-item {
-    padding: 0.5em;
-}
-
-.node .list-group-item div {
-    width:100%;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-.node .list-group-item .badge {
-    margin: 0;
-    margin-top:2px;
-}
-.node .list-group-item .text {
-    padding: 0;
-    margin: 0;
-    display : block;
-}
-
 .layout-pane {
     transform:translate(0,0);
     transition:transform 300ms cubic-bezier(0.4, 0, 0.2, 1);

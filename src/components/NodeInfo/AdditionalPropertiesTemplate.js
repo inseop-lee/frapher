@@ -30,26 +30,26 @@ function AdditionalPropertiesTemplate(props) {
   } = props;
 
   return (
-    <div className={classNames}>
+    <div className={classNames + " additional"}>
       <Form.Control
         type="text"
         required={required}
         id={`${id}-key`}
-        onBlur={e=> onKeyChange(e.target.value)}
+        onBlur={e => onKeyChange(e.target.value)}
         className="ap-key"
         defaultValue={label}
         size="sm"
       />
       <div className="ap-value">{children}</div>
-        <Button
-          variant="outline-danger"
-          className="array-item-remove"
-          disabled={disabled || readonly}
-          onClick={onDropPropertyClick(label)}
-          size="sm"
-        >
-          <MdClose/>
-        </Button>
+      <Button
+        variant="outline-danger"
+        className="array-item-remove"
+        disabled={disabled || readonly}
+        onClick={onDropPropertyClick(label)}
+        size="sm"
+      >
+        <MdClose />
+      </Button>
     </div>
   );
 }

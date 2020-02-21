@@ -1,0 +1,163 @@
+{
+    "type": "object",
+    "oneOf" : [
+        {
+            "title":"feedback/response",
+            "type": "object",
+            "required": ["type","message"],
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "default": "feedback/response",
+                    "enum": ["feedback/response"]
+                },
+                "message": {
+                    "title":"Message",
+                    "type": "array",
+                    "minItems":1,
+                    "items": {
+                        "type": "object",
+                        "required": ["code"],
+                        "properties": {
+                            "code": {"type":"string"},
+                            "param": {
+                                "title":"Parameters",
+                                "type":"object",
+                                "additionalProperties": {"type": "string"}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "title":"ctrl/tag",
+            "type": "object",
+            "required": ["type","message","feedback_list"],
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "default": "ctrl/tag",
+                    "enum": ["ctrl/tag"]
+                },
+                "message": {
+                    "title":"Message",
+                    "type": "array",
+                    "minItems":1,
+                    "items": {
+                        "type": "object",
+                        "required": ["class","ctrl_key","code","param","device_id"],
+                        "properties": {
+                            "class": {"type":"string"},
+                            "ctrl_key": {"type":"string"},
+                            "code": {"type":"string"},
+                            "device_id": {"type":"string", "default":"$.device.id"},
+                            "param": {
+                                "title":"Parameters",
+                                "type":"object",
+                                "additionalProperties": true
+                            }
+                        }
+                    }
+                },
+                "feedback_list": {
+                    "title":"Feedback List",
+                    "type":"object",
+                    "additionalProperties": {
+                        "type": "object",
+                        "required": ["type","message"],
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "default": "feedback/response",
+                                "enum": ["feedback/response"]
+                            },
+                            "message": {
+                                "title":"Message",
+                                "type": "array",
+                                "minItems":1,
+                                "items": {
+                                    "type": "object",
+                                    "required": ["code"],
+                                    "properties": {
+                                        "code": {"type":"string"},
+                                        "param": {
+                                            "title":"Parameters",
+                                            "type":"object",
+                                            "additionalProperties": {"type": "string"}
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "title":"ctrl/async",
+            "type": "object",
+            "required": ["type","message","feedback_list"],
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "default": "ctrl/async",
+                    "enum": ["ctrl/async"]
+                },
+                "message": {
+                    "title":"Message",
+                    "type": "array",
+                    "required": ["code"],
+                    "minItems":1,
+                    "items": {
+                        "type": "object",
+                        "required": ["class","ctrl_key","code","param","device_id"],
+                        "properties": {
+                            "class": {"type":"string"},
+                            "ctrl_key": {"type":"string"},
+                            "code": {"type":"string"},
+                            "device_id": {"type":"string", "default":"$.device.id"},
+                            "param": {
+                                "title":"Parameters",
+                                "type":"object",
+                                "additionalProperties": {"type": "string"}
+                            }
+                        }
+                    }
+                },
+                "feedback_list": {
+                    "title":"Feedback List",
+                    "type":"object",
+                    "additionalProperties": {
+                        "type": "object",
+                        "required": ["type","message"],
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "default": "feedback/response",
+                                "enum": ["feedback/response"]
+                            },
+                            "message": {
+                                "title":"Message",
+                                "type": "array",
+                                "minItems":1,
+                                "items": {
+                                    "type": "object",
+                                    "required": ["code"],
+                                    "properties": {
+                                        "code": {"type":"string"},
+                                        "param": {
+                                            "title":"Parameters",
+                                            "type":"object",
+                                            "additionalProperties": {"type": "string"}
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    ]
+}

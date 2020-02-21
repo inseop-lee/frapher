@@ -1,4 +1,10 @@
 .nodeInfo {
+    width:100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.nodeInfo-container li {
     padding: 0.7em 1em 0.5em 0.7em;
 }
 .nodeInfo-header{
@@ -9,7 +15,7 @@
     margin:0;
 }
 
-.childList .card {
+.childList .card:not(.nested) {
     border-radius:0;
     border-left:0;
     border-right:0;
@@ -28,8 +34,14 @@
     cursor: pointer;
 }
 
-.childList .schema_form {
-    padding: 0 1.5em 1em 1.5em;
+.childList .schema-form {
+    padding: 0.5em 1.5em 1em 1.5em;
+}
+.childList .schema-form-buttons {
+    justify-content: space-between;
+    align-items: center;
+    display: flex;
+    width:100%;
 }
 .childList .select {
     justify-content: space-between;
@@ -40,11 +52,18 @@
 .childList fieldset{
     width:100%;
 }
-.childList .field-object .form-group {
+.childList .field-object .form-group:not(.nested) {
     justify-content: space-between;
     align-items: center;
     display: flex;
 }
+.childList .field-object .nested-key {
+    justify-content: space-between;
+    align-items: center;
+    display: flex;
+    margin-bottom: 1em;
+}
+
 
 .object-header legend {
     font-size:1.2rem;
@@ -63,8 +82,30 @@
     margin:0;
 }
 
-.childList .form-group {
+.childList .form-group:not(.field) .select {
+    margin-bottom:0;
+}
+.childList .form-group:not(.field) {
     margin-bottom:0.5em;
+}
+
+.add-child-card .card-header{
+    background-color: #fff;
+}
+
+.add-child-section {
+    padding-top: 0.5em;
+    border-top: 1px solid #ddd;
+}
+.add-child-section form {
+    width:100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.5em;
+}
+.add-child-section input,.add-child-section select {
+    margin-right:0.5em;
 }
 
 .field-object {
@@ -85,7 +126,10 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom:0.5em;
+}
+
+.array-header, .array-title {
+    margin-bottom: 0.5em;
 }
 
 .array-container {
@@ -97,7 +141,7 @@
 }
 
 .ap-key {
-    width:33%;
+    width:100%;
     margin-right:2%;
 }
 
@@ -111,36 +155,34 @@
     margin-bottom:0;
 }
 
-.nextnode th {
-    width:27%;
+.nextnode .list-group-item {
+    padding : 0.5em 1em;
 }
 
-.nextnode td {
-    vertical-align: middle;
+.nextnode-branch {
+    border-top: 1px solid #dfdfdf;
+    margin-top:0.5em;
+    padding-top:0.7em;
+    padding-bottom:0.3em;
 }
 
-.branch-checkbox {
-    margin-right: 0 !important;
-}
-
-.branch-checkbox input {
-    margin-right: 0 !important;
+.nextnode-branch em {
+    padding:0;
+    font-weight: bold;
 }
 
 .nextnode-item {
     width:100%;
     display: flex !important;
     align-items: center;
+    justify-content: space-between;
     padding: 0.3em;
 }
-.nextnode-item h6 {
+.nextnode-item h5 {
     margin:0;
-    border-right: 1px solid #aaa;
-    padding-right: 1em;
 }
 
 .nextnode-item-key {
-    width:100%;
     padding-left: 1em;
     display: flex;
     align-items: center;
@@ -150,4 +192,30 @@
 .nextnode-item-key div {
     display: flex;
     align-items: center;
+}
+.add-node {
+    width:100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+}
+.add-node .btn-group {
+    width: 300px;
+    margin-left: 0.5em;
+}
+
+.grey {
+    text-align:center;
+    color: #ccc;
+}
+
+.info-container {
+    border-left: 2px solid #fafafa;
+    padding-left: 1.2em;
+}
+
+.nodeInfo input {
+    margin-right: 1em;
 }

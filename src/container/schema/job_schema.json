@@ -131,47 +131,6 @@
             }
         },
         {
-            "title":"database",
-            "type": "object",
-            "required": ["result","type","source","info"],
-            "properties": {
-                "result": { "type": "string" },
-                "type": {
-                    "type": "string",
-                    "title": "Job Type",
-                    "default":"database",
-                    "enum": ["database"]
-                },
-                "source": { "type": "string" },
-                "info": {
-                    "title":"Info",
-                    "type": "object",
-                    "required": ["fields","condition"],
-                    "properties": {
-                        "fields":{
-                            "type":"array",
-                            "title":"Table Name",
-                            "items":{ "type" : "string" }
-                        },
-                        "condition": {
-                            "type": "array",
-                            "title": "Condition",
-                            "minItems": 1,
-                            "items": {
-                                "type": "object",
-                                "required": ["key","value","exp"],
-                                "properties": {
-                                    "key": { "type": "string", "default": "" },
-                                    "value": { "type": "string", "default": "" },
-                                    "exp": { "type": "string", "enum": ["eq","ne","lt","le","gt","ge","in","null","notNull"] }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        {
             "title": "http",
             "type": "object",
             "required": [
@@ -319,6 +278,62 @@
                         }
                     }
                 }
+            }
+        },
+        {
+			"title": "database",
+			"type": "object",
+			"required": ["result", "type", "source", "info"],
+			"properties": {
+				"result": {
+					"type": "string"
+				},
+				"type": {
+					"type": "string",
+					"title": "Job Type",
+					"default": "database",
+					"enum": ["database"]
+				},
+				"source": {
+					"type": "string"
+				},
+				"info": {
+					"title": "Info",
+					"type": "object",
+					"required": ["fields", "condition"],
+					"properties": {
+						"fields": {
+							"type": "array",
+							"title": "Table Name",
+							"items": {
+								"type": "string"
+							}
+						},
+						"condition": {
+							"type": "array",
+							"title": "Condition",
+							"minItems": 1,
+							"items": {
+								"type": "object",
+								"required": ["key", "value", "exp"],
+								"properties": {
+									"key": {
+										"type": "string",
+										"default": ""
+									},
+									"value": {
+										"type": "string",
+										"default": ""
+									},
+									"exp": {
+										"type": "string",
+										"enum": ["eq", "ne", "lt", "le", "gt", "ge", "in", "null", "notNull"]
+									}
+								}
+							}
+						}
+					}
+				}
             }
         }
     ]

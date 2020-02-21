@@ -1,91 +1,118 @@
-
-import React, { useState } from "react";
-import { Accordion, Badge, Card } from "react-bootstrap";
+import React from "react";
+import { Accordion, Card, Button } from "react-bootstrap";
 import Form from "react-jsonschema-form";
-import { useAccordionToggle } from "react-bootstrap/AccordionToggle";
-
 import ArrayFieldTemplate from "./ArrayFieldTemplate";
 import ObjectFieldTemplate from "./ObjectFieldTemplate";
 import AdditionalPropertiesTemplate from "./AdditionalPropertiesTemplate";
-import {TextTemplate,SelectTemplate} from "./InputTemplate";
-
-import job from "../../container/schema";
-
-function AccordionItem({ id, type, eventKey, changeEvent }) {
-    const decoratedOnClick = useAccordionToggle(eventKey, () =>
-      changeEvent(eventKey)
-    );
-  
-    return (
-      <Card.Header onClick={decoratedOnClick}>
-        <h5 className="text">{id}</h5>
-        <Badge variant="info">{type}</Badge>
-      </Card.Header>
-    );
-  }
-
-  const uiSchema = {
-    oneOf: {
-      "ui:options" :{
-        title:false
+import NestedAdditionalPropertiesTemplate from "./NestedAdditionalPropertiesTemplate";
+import { TextTemplate, SelectTemplate } from "./InputTemplate";
+import ChildTypeBadge from "../Common/ChildTypeBadge";
+const uiSchema = {
+  type: {
+    "ui:widget": "hidden"
+  },
+  message: {
+    param: {
+      additionalProperties: {
+        "ui:FieldTemplate": AdditionalPropertiesTemplate
       }
     },
-    type: {
-      "ui:widget": "hidden"
-    },
-    info: {
-      params: {
+    items: {
+      param: {
         additionalProperties: {
           "ui:FieldTemplate": AdditionalPropertiesTemplate
         }
-      },
-      parameters: {
-        additionalProperties: {
-          "ui:FieldTemplate": AdditionalPropertiesTemplate
-        }
-      },
-      url: {
-        parameter: {
-          additionalProperties: {
-            "ui:FieldTemplate": AdditionalPropertiesTemplate
+      }
+    }
+  },
+  feedback_list: {
+    additionalProperties: {
+      "ui:FieldTemplate": NestedAdditionalPropertiesTemplate,
+      message: {
+        items: {
+          param: {
+            additionalProperties: {
+              "ui:FieldTemplate": AdditionalPropertiesTemplate
+            }
           }
         }
       }
     }
-  };
+  },
+  info: {
+    params: {
+      additionalProperties: {
+        "ui:FieldTemplate": AdditionalPropertiesTemplate
+      }
+    },
+    parameters: {
+      additionalProperties: {
+        "ui:FieldTemplate": AdditionalPropertiesTemplate
+      }
+    },
+    url: {
+      parameter: {
+        additionalProperties: {
+          "ui:FieldTemplate": AdditionalPropertiesTemplate
+        }
+      }
+    }
+  }
+};
 
-
-function ChildCard({ parentId, id, data, onSubmit, index }) {
-    const [event, setEvent] = useState(0);
-    const changeEvent = eventKey => {
-        setEvent(eventKey);
-      };
-    
-    return (
-                <Card key={parentId + "/" + id}>
-                <AccordionItem
-                  id={id}
-                  type={data.type}
-                  eventKey={index}
-                  changeEvent={changeEvent}
-                />
-                <Accordion.Collapse eventKey={index}>
-                  <div className="schema_form">
-                    {event === index && (
-                      <Form
-                        schema={job}
-                        onSubmit={e => onSubmit(e, id)}
-                        formData={data}
-                        uiSchema={uiSchema}
-                        widgets={{TextWidget:TextTemplate,SelectWidget:SelectTemplate}}
-                        ArrayFieldTemplate={ArrayFieldTemplate}
-                        ObjectFieldTemplate={ObjectFieldTemplate}
-                      />
-                    )}
-                  </div>
-                </Accordion.Collapse>
-              </Card>
-    );
+function ChildCard({
+  parentId,
+  id,
+  data,
+  schema,
+  onSubmit,
+  index,
+  onSelect,
+  isSelected,
+  onDelete,
+  isNew
+}) {
+  return (
+    <Card key={parentId + "/" + id} className={isNew ? "add-child-card" : ""}>
+      <Accordion.Toggle
+        as={Card.Header}
+        eventKey={index}
+        onClick={e => onSelect(e, index)}
+      >
+        <h5 className="text">{id}</h5>
+        <ChildTypeBadge type={data.type} />
+      </Accordion.Toggle>
+      <Accordion.Collapse eventKey={index}>
+        <div className="schema-form">
+          {isSelected && (
+            <Form
+              schema={schema}
+              onSubmit={e => onSubmit(e, id)}
+              formData={data}
+              uiSchema={uiSchema}
+              widgets={{
+                TextWidget: TextTemplate,
+                SelectWidget: SelectTemplate
+              }}
+              ArrayFieldTemplate={ArrayFieldTemplate}
+              ObjectFieldTemplate={ObjectFieldTemplate}
+            >
+              <div className="schema-form-buttons">
+                <Button variant="primary" type="submit">
+                  Submit
+                </Button>
+                {onDelete && (
+                  <Button variant="danger" onClick={e => onDelete(e, id)}>
+                    {isNew ? "Cancel" : "Delete"}
+                  </Button>
+                )}
+              </div>
+            </Form>
+          )}
+        </div>
+      </Accordion.Collapse>
+    </Card>
+  );
 }
 
 export default ChildCard;

@@ -1,36 +1,80 @@
 import React from "react";
 
-import { Card,Badge,ListGroup } from "react-bootstrap";
+import { Card, ListGroup, Button, ButtonGroup } from "react-bootstrap";
+import ChildTypeBadge from "../Common/ChildTypeBadge";
 
-function NodeInnerTemplate({ node, config, childDataSet, selectItem }) {
-  
+function NodeInnerTemplate({
+  node,
+  childDataSet,
+  selected,
+  onClickEditId,
+  onClickDelete
+}) {
+  const isFinal = !node.ports.out;
   return (
-    <Card className="node">
-      <Card.Title className="font-weight-bold">{node.id}</Card.Title>
+    <>
+      {selected && (
+        <div className="node-inner-popup">
+          <ButtonGroup className="d-flex">
+            <Button size="sm" onClick={onClickEditId}>
+              Edit ID
+            </Button>
+            <Button size="sm" variant="danger" onClick={onClickDelete}>
+              Delete
+            </Button>
+          </ButtonGroup>
+        </div>
+      )}
+      {isFinal ? (
+        <FinalNode
+          node={node}
+          childDataSet={childDataSet}
+          selected={selected}
+        />
+      ) : (
+        <ProcessorNode
+          node={node}
+          childDataSet={childDataSet}
+          selected={selected}
+        />
+      )}
+    </>
+  );
+}
+
+function FinalNode({ node, childDataSet }) {
+  return (
+    <Card bg="light" className="node">
       <Card.Body>
-        <ChildNodes node={node} config={config} childDataSet={childDataSet} selectItem={selectItem} />
+        <div className="node-inner-justify">
+          <h5>{node.id}</h5>
+          {childDataSet &&
+            Object.entries(childDataSet).map(([id, data], index) => (
+              <ChildTypeBadge type={data.type} key={`final-badge-${index}`} />
+            ))}
+        </div>
       </Card.Body>
     </Card>
   );
 }
 
-export function ChildNodes({ node, config, childDataSet, selectItem }) {
+function ProcessorNode({ node, childDataSet }) {
   return (
-    <ListGroup>
-      {Object.entries(childDataSet).map(([id, data]) => {
-          return (
-            <ListGroup.Item
-              key={node.id + "/" + id}
-              onClick={e => selectItem(id, "child")}
-            >
-              <div>
+    <Card className="node">
+      <Card.Title className="font-weight-bold">{node.id}</Card.Title>
+      <Card.Body>
+        <ListGroup>
+          {Object.entries(childDataSet).map(([id, data]) => (
+            <ListGroup.Item variant="light" key={node.id + "/" + id}>
+              <div className="node-inner-justify">
                 <span className="text">{id}</span>
-                <Badge variant="info">{data.type}</Badge>
+                <ChildTypeBadge type={data.type} />
               </div>
             </ListGroup.Item>
-          );
-        })}
-    </ListGroup>
+          ))}
+        </ListGroup>
+      </Card.Body>
+    </Card>
   );
 }
 
