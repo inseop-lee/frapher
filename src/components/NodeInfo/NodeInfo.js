@@ -30,7 +30,7 @@ function NodeInfo({ rule, selected, NodeItemActions }) {
   const node = nodes[selected.id];
   const final_actions = rule.children.final_actions;
   const isFinal = !node.next;
-  const isStart = selected.id === rule.nodes.start;
+  //const isStart = selected.id === rule.nodes.start;
   const [isToastOpen, setToastOpen] = useState(false);
   const [selectedChild, setSelectedChild] = useState(isFinal ? 0 : -1);
   const [tempChild, setTempChild] = useState({});
@@ -124,17 +124,6 @@ function NodeInfo({ rule, selected, NodeItemActions }) {
       <li className="nodeInfo">
         <h3>{selected.id} </h3>
       </li>
-      {!isFinal && (
-        <li>
-          <h4>Next</h4>
-          <Links
-            nodeId={selected.id}
-            nodeData={node}
-            branchCondition={getBranchCondition(rule, selected.id)}
-            editNextNode={NodeItemActions.editNextNode}
-          />
-        </li>
-      )}
       <li className="childList">
         <h4>{isFinal ? "Actions" : "Jobs"}</h4>
         <div className="add-child-section">
@@ -228,6 +217,18 @@ function NodeInfo({ rule, selected, NodeItemActions }) {
               ))}
         </Accordion>
       </li>
+      {!isFinal && (
+        <li>
+          <h4>Next</h4>
+          <Links
+            nodeId={selected.id}
+            nodeData={node}
+            branchCondition={getBranchCondition(rule, selected.id)}
+            editNextNode={NodeItemActions.editNextNode}
+            addNextNode={NodeItemActions.addNextNode}
+          />
+        </li>
+      )}
     </ul>
   );
 }

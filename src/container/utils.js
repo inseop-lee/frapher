@@ -1,4 +1,4 @@
-import { isEqual, cloneDeep } from "lodash";
+import { cloneDeep } from "lodash";
 import { JobType, ActionType, NodePort } from "./constants";
 
 import dagre from "dagre";
@@ -124,7 +124,7 @@ export const MinimalChildData = {
 };
 
 export function getNewNodeName(rule) {
-  let nodeNamePrefix = "new-node-";
+  let nodeNamePrefix = "new_node_";
   let count = 1;
   while (rule.nodes[nodeNamePrefix + count]) count += 1;
 
@@ -172,62 +172,6 @@ export function hasBranchChild(nodeId, rule) {
 export const linkId = (from, to) => from + "-" + to;
 export const PROC_START = "start";
 
-const [NODE_WIDTH, NODE_HEIGHT] = [250, 250];
-
-function traverse(graph, prev, id, x, y, depth) {
-  //init graph
-  graph.state = graph.state
-    ? graph.state
-    : { loopCheck: {}, spaceBefore: {}, deepest: 0 };
-
-  const setItems = (s, d, x, y, p) => {
-    graph[id].space = s;
-    graph[id].depth = d;
-    graph[id].x = x;
-    graph[id].y = y;
-    graph.state.spaceBefore[d] = graph.state.spaceBefore[d]
-      ? graph.state.spaceBefore[d] + s
-      : s;
-    graph[id].prev = p;
-  };
-
-  graph.state.deepest =
-    depth > graph.state.deepest ? depth : graph.state.deepest;
-
-  if (graph.state.loopCheck[id]) {
-    return { graph, space: 0, x, y, depth };
-  }
-
-  graph.state.loopCheck[id] = true;
-  let spaceBefore = graph.state.spaceBefore[depth]
-    ? graph.state.spaceBefore[depth]
-    : 0;
-
-  if (isEqual(graph[id].next, {}) || !graph[id].next) {
-    const [resX, resY] = [
-      spaceBefore * NODE_WIDTH + NODE_WIDTH / 2,
-      y + NODE_HEIGHT * depth
-    ];
-    setItems(1, depth, resX, resY, prev);
-    return { graph, space: 1, x, y, depth };
-  }
-
-  //traverse nexts
-  let sumSpace = 0;
-  for (const nextId of Object.values(graph[id].next)) {
-    sumSpace += traverse(graph, id, nextId, x, y, depth + 1).space;
-  }
-
-  spaceBefore = graph.state.spaceBefore[depth]
-    ? graph.state.spaceBefore[depth]
-    : 0;
-  const [resX, resY] = [
-    spaceBefore * NODE_WIDTH + (NODE_WIDTH * sumSpace) / 2,
-    y + NODE_HEIGHT * depth
-  ];
-  setItems(sumSpace, depth, resX, resY, prev);
-  return { graph, space: sumSpace, x, y, depth };
-}
 export function initChart(nodes) {
   const nodesTmp = cloneDeep(nodes);
   const rootNode = nodesTmp[PROC_START];
@@ -253,13 +197,11 @@ export function initChart(nodes) {
     }
   });
 
-  console.log(nodesTmpList);
-
-  for (const [nodeId, item] of nodesTmpList) {
-    console.log(nodeId, item);
+  for (const item of nodesTmpList) {
+    const nodeId = item[0];
     const next = nodesTmp[nodeId].next;
     widthMap[nodeId] = 270;
-    heightMap[nodeId] = next ? 100 : 50;
+    heightMap[nodeId] = next ? 100 : 76;
     g.setNode(nodeId, { width: widthMap[nodeId], height: heightMap[nodeId] });
     if (next) {
       for (const nextKey in next) {

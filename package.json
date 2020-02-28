@@ -4,10 +4,12 @@
   "private": true,
   "dependencies": {
     "@kunukn/react-collapse": "^2.2.7",
+    "@monaco-editor/react": "^3.1.1",
     "@mrblenny/react-flow-chart": "0.0.8",
     "@types/uuid": "^3.4.6",
     "bootstrap": "^4.4.1",
     "dagre": "^0.8.5",
+    "downloadjs": "^1.4.7",
     "lodash": "^4.17.15",
     "prop-types": "^15.7.2",
     "react": "^16.12.0",

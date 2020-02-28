@@ -12,6 +12,8 @@ const EDIT_NODE_ID = "EDIT_NODE_ID";
 const DELETE_NODE = "DELETE_NODE";
 const ADD_NEXT_NODE = "ADD_NEXT_NODE";
 const DELETE_LINK = "DELETE_LINK";
+const SET_INIT_RULE = "SET_INIT_RULE";
+const UPDATE_RULE = "UPDATE_RULE";
 
 // Reducer
 const initialState = {
@@ -990,12 +992,13 @@ function selectChildNode(parentId, id) {
     id
   };
 }
-function editNextNode(id, nextId, condition) {
+function editNextNode(id, nextId, originalCondition, targetCondition) {
   return {
     type: EDIT_NEXT_NODE,
     id,
     nextId,
-    condition
+    originalCondition,
+    targetCondition
   };
 }
 function deleteChildNode(parentId, id) {
@@ -1037,6 +1040,20 @@ function deleteLink(fromId, toId) {
   };
 }
 
+function setInitRule(rule) {
+  return {
+    type: SET_INIT_RULE,
+    rule
+  };
+}
+
+function updateRule(rule) {
+  return {
+    type: UPDATE_RULE,
+    rule
+  };
+}
+
 function nodeItem(state = initialState, action) {
   switch (action.type) {
     case ADD_NODE:
@@ -1061,6 +1078,10 @@ function nodeItem(state = initialState, action) {
       return applyAddNextNode(state, action);
     case DELETE_LINK:
       return applyDeleteLink(state, action);
+    case SET_INIT_RULE:
+      return applySetInitRule(state, action);
+    case UPDATE_RULE:
+      return applyUpdateRule(state, action);
     default:
       return state;
   }
@@ -1175,17 +1196,13 @@ function applyEditChildNode(state, { parentId, id, data, isAction }) {
       };
   return returnState;
 }
-function applyEditNextNode(state, { id, nextId, condition }) {
-  console.log(id, nextId, condition);
+function applyEditNextNode(
+  state,
+  { id, nextId, originalCondition, targetCondition }
+) {
   const nextObj = cloneDeep(state.rule.nodes[id].next);
-  const origin = Object.entries(nextObj).find(
-    ([key, value]) => value === nextId
-  );
-  if (!origin) {
-    return state;
-  }
-  delete nextObj[origin[0]];
-  nextObj[condition] = nextId;
+  delete nextObj[originalCondition];
+  nextObj[targetCondition] = nextId;
   return {
     ...state,
     rule: {
@@ -1299,10 +1316,11 @@ function applyAddNextNode(state, { fromId, toId, nextKey }) {
 function applyDeleteLink(state, { fromId, toId }) {
   const nodes = cloneDeep(state.rule.nodes);
   if (nodes[fromId].next) {
-    const target = Object.entries(nodes[fromId].next).find(
+    const targets = Object.entries(nodes[fromId].next).filter(
       element => element[1] === toId
     );
-    if (target) {
+    console.log(targets);
+    for (const target of targets) {
       delete nodes[fromId].next[target[0]];
     }
   }
@@ -1312,6 +1330,35 @@ function applyDeleteLink(state, { fromId, toId }) {
       ...state.rule,
       nodes: nodes
     }
+  };
+}
+
+function applySetInitRule(state, { rule }) {
+  if (!rule || !rule.nodes || !rule.nodes.start) {
+    return {
+      ...state,
+      initRule: {
+        nodes: {
+          start: "new_node_1",
+          new_node_1: {
+            jobList: [],
+            next: {}
+          }
+        },
+        children: { jobs:{},final_actions:{}}
+      }
+    };
+  }
+  return {
+    ...state,
+    initRule: rule
+  };
+}
+
+function applyUpdateRule(state, { rule }) {
+  return {
+    selected: {type:null,id:null},
+    rule: rule
   };
 }
 
@@ -1327,7 +1374,9 @@ const actionCreators = {
   editNodeId,
   deleteNode,
   addNextNode,
-  deleteLink
+  deleteLink,
+  setInitRule,
+  updateRule
 };
 export { actionCreators };
 

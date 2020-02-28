@@ -1,15 +1,20 @@
 import React, { useState } from "react";
-import { cloneDeep } from "lodash";
-import { Button, ListGroup, Form, ButtonGroup } from "react-bootstrap";
-import { Checkbox } from "semantic-ui-react";
+import { cloneDeep, flatten } from "lodash";
+import {
+  Button,
+  Form,
+  ButtonGroup,
+  Accordion,
+  Card,
+  Badge
+} from "react-bootstrap";
 
 function Links({
   nodeId,
   nodeData,
   branchCondition,
   editNextNode,
-  nextId,
-  onSubmit
+  addNextNode
 }) {
   const conditionToText = condition => {
     const expMap = { eq: "=", ne: "≠", lt: "<", le: "≤", gt: ">", ge: "≥" };
@@ -35,131 +40,246 @@ function Links({
       default:
         return (
           <>
-            <em>{condition.key}</em> {expMap[condition.exp]}
-            <em>{condition.value}</em>
+            <em>{condition.key}</em> {expMap[condition.exp]} {condition.value}
           </>
         );
     }
   };
 
-  const nextItems = cloneDeep(nodeData.next);
-  const tempEditMode = {};
-  Object.values(nextItems).forEach(nodeId => (tempEditMode[nodeId] = false));
-  const [editMode, setEditMode] = useState(tempEditMode);
+  const [editableBranchId, setEditableBranchId] = useState(null);
+  const [selectedNext, setSelectedNext] = useState(-1);
+  const [addBranch, setAddBranch] = useState(false);
+
+  const getBranchId = (nodeId, condition) => `${nodeId}-${condition}`;
+  const conditionInputRef = {};
+  const convertNext = Object.entries(cloneDeep(nodeData.next)).reduce(
+    (acc, [condition, nodeId]) => {
+      acc[nodeId] = acc[nodeId] ? acc[nodeId] : [];
+      acc[nodeId].push(condition);
+      acc[nodeId].sort((a, b) => (a < b ? 1 : -1));
+      return acc;
+    },
+    {}
+  );
+  Object.entries(convertNext).forEach(([nodeId, conditionList]) => {
+    conditionList.forEach(
+      condition =>
+        (conditionInputRef[getBranchId(nodeId, condition)] = Array.from(
+          { length: branchCondition.length },
+          x => React.createRef()
+        ))
+    );
+  });
+
+  const addBranchRef = Array.from({ length: branchCondition.length }, x =>
+    React.createRef()
+  );
 
   const isChecked = (bitStr, i) => bitStr[i] === "1";
 
-  const original = nodeId =>
-    Object.keys(nextItems).filter(function(key) {
-      return nextItems[key] === nodeId;
-    })[0];
+  const original = branchId => branchId.split("-")[1];
 
-  const handleSubmit = (e, nextId) => {
+  const handleSubmit = (e, branchId) => {
     e.preventDefault();
-    const conditionStr = conditionInputRef[nextId].reduce(
+    const nextId = branchId.split("-")[0];
+    const conditionStr = conditionInputRef[branchId].reduce(
       (acc, cur) => acc + (cur.current.checked ? "1" : "0"),
       ""
     );
-    if (Object.keys(nextItems).find(str => str === conditionStr)) {
-      if (original(nextId) !== conditionStr) {
+    if (hasDuplicateCondition(conditionStr)) {
+      if (original(branchId) !== conditionStr) {
         alert('The condition "' + conditionStr + '" already exists.');
-        restoreEdit(nextId);
+        restoreEdit(branchId);
         return;
       }
     }
-    editNextNode(nodeId, nextId, conditionStr);
-    toggleEdit(nextId);
+    setEditableBranchId(null);
+    editNextNode(nodeId, nextId, original(branchId), conditionStr);
   };
 
-  const restoreEdit = nextId => {
-    conditionInputRef[nextId].forEach(
-      (ref, index) => (ref.current.checked = isChecked(original(nextId), index))
+  const hasDuplicateCondition = conditionStr =>
+    flatten(Object.values(convertNext)).find(str => str === conditionStr);
+
+  const restoreEdit = branchId => {
+    conditionInputRef[branchId].forEach(
+      (ref, index) =>
+        (ref.current.checked = isChecked(original(branchId), index))
     );
-    toggleEdit(nextId);
+    toggleEdit(branchId);
   };
 
-  const toggleEdit = nodeId => {
-    const tempEditMode = cloneDeep(editMode);
-    tempEditMode[nodeId] = !editMode[nodeId];
-    setEditMode(tempEditMode);
+  const toggleEdit = branchId => {
+    setEditableBranchId(editableBranchId === branchId ? null : branchId);
   };
 
-  const conditionInputRef = {};
-  Object.values(nextItems).forEach(
-    key =>
-      (conditionInputRef[key] = Array.from(
-        { length: branchCondition.length },
-        x => React.createRef()
-      ))
-  );
+  const handleAddBranch = e => {
+    setAddBranch(true);
+  };
+
+  const handleCancelAddBranch = e => {
+    setAddBranch(false);
+  };
+
+  const handleSubmitAddBranch = (e, nextId) => {
+    e.preventDefault();
+    setAddBranch(false);
+    const conditionStr = addBranchRef.reduce(
+      (acc, cur) => acc + (cur.current.checked ? "1" : "0"),
+      ""
+    );
+    if (hasDuplicateCondition(conditionStr)) {
+      alert('The condition "' + conditionStr + '" already exists.');
+      return;
+    }
+    addNextNode(nodeId, nextId, conditionStr);
+  };
+
+  const handleSelectNext = (e, eventKey) => {
+    setSelectedNext(selectedNext !== eventKey ? eventKey : -1);
+    setAddBranch(false);
+  };
 
   return (
-    <ListGroup className="nextnode">
-      {Object.entries(nextItems).map(([key, value], nextIndex) => (
-        <ListGroup.Item key={`nextnode-item-${nextIndex}`}>
-          <Form onSubmit={e => handleSubmit(e, value)}>
-            <div className="nextnode-item">
-              <h5>{value}</h5>
-              <div className="nextnode-item-key">
+    <div className="nextnode">
+      <Accordion activeKey={selectedNext}>
+        {Object.entries(convertNext)
+          .sort(([a, aC], [b, bC]) => (aC[0] < bC[0] ? 1 : -1))
+          .map(([nextNodeId, conditionList], nextIndex) => (
+            <Card key={`nextnode-item-${nextIndex}`}>
+              <Accordion.Toggle
+                as={Card.Header}
+                className={conditionList[0] === "default" && "no-cursor"}
+                eventKey={conditionList[0] !== "default" ? nextIndex : null}
+                onClick={e =>
+                  handleSelectNext(
+                    e,
+                    conditionList[0] !== "default" ? nextIndex : null
+                  )
+                }
+              >
+                <h5>{nextNodeId}</h5>
                 <div>
-                  {branchCondition.length !== 0 && editMode[value] && (
-                    <ButtonGroup>
-                      <Button
-                        variant="primary"
-                        className="array-add-item"
-                        size="sm"
-                        type="submit"
-                      >
-                        Save
-                      </Button>
-                      <Button
-                        variant="danger"
-                        className="array-add-item"
-                        size="sm"
-                        onClick={e => restoreEdit(value)}
-                      >
-                        Cancel
-                      </Button>
-                    </ButtonGroup>
-                  )}
-                  {branchCondition.length !== 0 && !editMode[value] && (
-                    <Button
-                      variant="primary"
-                      className="array-add-item"
-                      size="sm"
-                      onClick={e => toggleEdit(value)}
+                  {conditionList.map(condition => (
+                    <Badge
+                      key={`badge-${nextNodeId}-${condition}`}
+                      variant="dark"
                     >
-                      Edit
+                      {condition}
+                    </Badge>
+                  ))}
+                </div>
+              </Accordion.Toggle>
+              <Accordion.Collapse eventKey={nextIndex}>
+                <Card.Body className="nextnode-branch">
+                  {conditionList.map((condition, branchIndex) => {
+                    const branchId = getBranchId(nextNodeId, condition);
+                    return (
+                      <div
+                        className="nextnode-branch-item"
+                        key={`branch-${branchId}`}
+                      >
+                        <div className="nextnode-checkbox">
+                          {branchCondition.map((item, branchIndex) => (
+                            <Form.Check
+                              custom
+                              key={`checkbox-${branchId}-${branchIndex}`}
+                              id={`checkbox-${branchId}-${branchIndex}`}
+                              ref={conditionInputRef[branchId][branchIndex]}
+                              disabled={editableBranchId !== branchId}
+                              defaultChecked={isChecked(condition, branchIndex)}
+                              type="checkbox"
+                              label={conditionToText(item)}
+                            />
+                          ))}
+                        </div>
+                        <div className="nextnode-buttons">
+                          {branchCondition.length !== 0 &&
+                            editableBranchId === branchId && (
+                              <ButtonGroup vertical>
+                                <Button
+                                  variant="primary"
+                                  className="array-add-item"
+                                  size="sm"
+                                  onClick={e => handleSubmit(e, branchId)}
+                                >
+                                  Save
+                                </Button>
+                                <Button
+                                  variant="danger"
+                                  className="array-add-item"
+                                  size="sm"
+                                  onClick={e => restoreEdit(branchId)}
+                                >
+                                  Cancel
+                                </Button>
+                              </ButtonGroup>
+                            )}
+                          {branchCondition.length !== 0 &&
+                            editableBranchId !== branchId && (
+                              <Button
+                                variant="primary"
+                                className="array-add-item"
+                                size="sm"
+                                onClick={e => toggleEdit(branchId)}
+                              >
+                                Edit
+                              </Button>
+                            )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                  {addBranch ? (
+                    <div className="nextnode-branch-item">
+                      <div className="nextnode-checkbox">
+                        {branchCondition.map((item, branchIndex) => (
+                          <Form.Check
+                            custom
+                            key={`checkbox-add-${nextNodeId}-${branchIndex}`}
+                            id={`checkbox-add-${nextNodeId}-${branchIndex}`}
+                            ref={addBranchRef[branchIndex]}
+                            type="checkbox"
+                            label={conditionToText(item)}
+                          />
+                        ))}
+                      </div>
+                      <div className="nextnode-buttons">
+                        <ButtonGroup vertical>
+                          <Button
+                            variant="primary"
+                            className="array-add-item"
+                            size="sm"
+                            onClick={e => handleSubmitAddBranch(e, nextNodeId)}
+                          >
+                            Save
+                          </Button>
+                          <Button
+                            variant="danger"
+                            className="array-add-item"
+                            size="sm"
+                            onClick={handleCancelAddBranch}
+                          >
+                            Cancel
+                          </Button>
+                        </ButtonGroup>
+                      </div>
+                    </div>
+                  ) : (
+                    <Button
+                      size="sm"
+                      variant="success"
+                      block
+                      onClick={handleAddBranch}
+                    >
+                      Add
                     </Button>
                   )}
-                </div>
-              </div>
-            </div>
-            {branchCondition.length !== 0 && (
-              <div className="nextnode-branch">
-                {branchCondition.map((item, branchIndex) => (
-                  <Form.Check
-                    custom
-                    key={`checkbox-${key}-${branchIndex}`}
-                    id={`checkbox-${key}-${branchIndex}`}
-                    disabled={!editMode[value]}
-                    defaultChecked={isChecked(key, branchIndex)}
-                    ref={conditionInputRef[value][branchIndex]}
-                    type="checkbox"
-                    label={conditionToText(item)}
-                  />
-                ))}
-              </div>
-            )}
-          </Form>
-        </ListGroup.Item>
-      ))}
-      {Object.entries(nextItems).length === 0 && (
-        <ListGroup.Item className="grey">
-          Next Node does not exist.
-        </ListGroup.Item>
-      )}
-    </ListGroup>
+                </Card.Body>
+              </Accordion.Collapse>
+            </Card>
+          ))}
+      </Accordion>
+    </div>
   );
 }
 

@@ -46,7 +46,8 @@ function FinalNode({ node, childDataSet }) {
   return (
     <Card bg="light" className="node">
       <Card.Body>
-        <div className="node-inner-justify">
+        <div>
+          {/* <div className="node-inner-justify"> */}
           <h5>{node.id}</h5>
           {childDataSet &&
             Object.entries(childDataSet).map(([id, data], index) => (

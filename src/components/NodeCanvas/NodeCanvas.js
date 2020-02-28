@@ -1,4 +1,4 @@
-import { cloneDeep } from "lodash";
+import { cloneDeep, isEqual } from "lodash";
 import React from "react";
 import * as actions from "@mrblenny/react-flow-chart/src/container/actions";
 
@@ -21,16 +21,14 @@ import "./NodeCanvas.css";
 
 const EDIT_NODE = "EDIT_NODE";
 const INPUT_BRANCH = "INPUT_BRANCH";
+const HEADER_HEIGHT = 50;
 
 class NodeCanvas extends React.Component {
   constructor(props) {
     super(props);
     const chart = initChart(this.props.rule.nodes);
     this.state = {
-      offset: {
-        x: 0,
-        y: 0
-      },
+      offset: { x: 0, y: HEADER_HEIGHT },
       nodes: chart.nodes,
       links: chart.links,
       selected: cloneDeep(this.props.selected),
@@ -52,6 +50,24 @@ class NodeCanvas extends React.Component {
       };
       return obj;
     }, {});
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (this.props.initRule) {
+      if (!isEqual(prevProps.initRule, this.props.initRule)) {
+        const chart = initChart(this.props.initRule.nodes);
+        const newState = {
+          offset: { x: 0, y: HEADER_HEIGHT },
+          nodes: chart.nodes,
+          links: chart.links,
+          selected: {},
+          hovered: {},
+          modalData: null
+        };
+        this.setState(newState);
+        this.props.NodeItemActions.updateRule(this.props.initRule);
+      }
+    }
   }
 
   onAction(action, args) {
@@ -200,7 +216,9 @@ class NodeCanvas extends React.Component {
       this.setState({ links: links });
     }
     this.setState({ modalData: null });
+    this.setState({ offset: { x: 0, y: HEADER_HEIGHT } });
   }
+
   handleDeleteNode() {
     const isStart = this.props.rule.nodes.start === this.props.selected.id;
     if (isStart) {
@@ -226,18 +244,20 @@ class NodeCanvas extends React.Component {
   }
 
   handleAddNode(e, data) {
+    const offsetTop = document.getElementById("node-canvas").offsetTop;
+    const offsetLeft = document.getElementById("node-canvas").offsetLeft;
     const nodes = cloneDeep(this.state.nodes);
     const [x, y] = [
-      e.clientX - this.state.offset.x,
-      e.clientY - this.state.offset.y
+      e.clientX - this.state.offset.x - offsetLeft,
+      e.clientY - this.state.offset.y - offsetTop
     ];
     const nodeId = getNewNodeName(this.props.rule);
     const ports = !data.isFinal
       ? {
-          [NodePort.IN]: { id: NodePort.IN, type: "top" },
-          [NodePort.OUT]: { id: NodePort.OUT, type: "bottom" }
+          [NodePort.IN]: { id: NodePort.IN, type: "left" },
+          [NodePort.OUT]: { id: NodePort.OUT, type: "right" }
         }
-      : { [NodePort.IN]: { id: NodePort.IN, type: "top" } };
+      : { [NodePort.IN]: { id: NodePort.IN, type: "left" } };
     const newNode = {
       id: nodeId,
       ports: ports,
@@ -323,42 +343,44 @@ class NodeCanvas extends React.Component {
   render() {
     return (
       <>
+        <div id="node-canvas">
+          <ContextMenu id="nodecanvas-context-menu">
+            <MenuItem data={{ isFinal: false }} onClick={this.handleAddNode}>
+              Add Processor
+            </MenuItem>
+            <MenuItem data={{ isFinal: true }} onClick={this.handleAddNode}>
+              Add Final Action
+            </MenuItem>
+          </ContextMenu>
+          <ContextMenuTrigger id="nodecanvas-context-menu" holdToDisplay={-1}>
+            <FlowChart
+              chart={this.state}
+              callbacks={this.callbacks}
+              config={{
+                validateLink: this.handleAddLink
+              }}
+              Components={{
+                NodeInner: props =>
+                  NodeInnerTemplate({
+                    ...props,
+                    childDataSet: getChildDataSetById(
+                      props.node.id,
+                      this.props.rule
+                    ),
+                    selected: this.props.selected.id === props.node.id,
+                    onClickEditId: () => this.OpenModal(EDIT_NODE),
+                    onClickDelete: this.handleDeleteNode
+                  })
+              }}
+            />
+          </ContextMenuTrigger>
+        </div>
         <InputModal
           isOpen={this.state.modalData ? true : false}
           onSubmit={this.handleSubmitModal}
           onClose={this.handleCloseModal}
           data={this.state.modalData}
         />
-        <ContextMenu id="nodecanvas-context-menu">
-          <MenuItem data={{ isFinal: false }} onClick={this.handleAddNode}>
-            Add Processor
-          </MenuItem>
-          <MenuItem data={{ isFinal: true }} onClick={this.handleAddNode}>
-            Add Final Action
-          </MenuItem>
-        </ContextMenu>
-        <ContextMenuTrigger id="nodecanvas-context-menu" holdToDisplay={-1}>
-          <FlowChart
-            chart={this.state}
-            callbacks={this.callbacks}
-            config={{
-              validateLink: this.handleAddLink
-            }}
-            Components={{
-              NodeInner: props =>
-                NodeInnerTemplate({
-                  ...props,
-                  childDataSet: getChildDataSetById(
-                    props.node.id,
-                    this.props.rule
-                  ),
-                  selected: this.props.selected.id === props.node.id,
-                  onClickEditId: () => this.OpenModal(EDIT_NODE),
-                  onClickDelete: this.handleDeleteNode
-                })
-            }}
-          />
-        </ContextMenuTrigger>
       </>
     );
   }
