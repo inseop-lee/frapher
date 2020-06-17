@@ -1,7 +1,8 @@
 import { cloneDeep } from "lodash";
 import { JobType, ActionType, NodePort } from "./constants";
-
+import Ajv from "ajv";
 import dagre from "dagre";
+import { jobsSchema, processorsSchema, finalActionsSchema } from "./schema";
 
 export const MinimalChildData = {
   [JobType.BRANCH]: {
@@ -169,7 +170,6 @@ export function hasBranchChild(nodeId, rule) {
   return hasBranch;
 }
 
-export const linkId = (from, to) => from + "-" + to;
 export const PROC_START = "start";
 
 export function initChart(nodes) {
@@ -224,7 +224,8 @@ export function initChart(nodes) {
     chart.nodes[nodeId] = initNode(nodeId, x, y, nodeId === rootNode, !next);
     if (next) {
       for (const nextId of Object.values(next)) {
-        chart.links[linkId(nodeId, nextId)] = initLink(nodeId, nextId);
+        const linkId = uuidv4();
+        chart.links[linkId] = initLink(nodeId, nextId, linkId);
       }
     }
   }
@@ -245,9 +246,9 @@ function initNode(id, x, y, isStart, isFinal) {
   return result;
 }
 
-function initLink(from, to) {
+function initLink(from, to, linkId) {
   const result = {
-    id: linkId(from, to),
+    id: linkId,
     from: {
       nodeId: from,
       portId: "out"
@@ -264,4 +265,56 @@ export function getTypeVariant(type) {
   return Object.values(ActionType).find(item => item === type)
     ? "success"
     : "info";
+}
+
+export function uuidv4() {
+  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function(c) {
+    var r = (Math.random() * 16) | 0,
+      v = c === "x" ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+}
+
+function schemaValidate(title, schema, data) {
+  const ajv = new Ajv();
+  if (!ajv.validate(schema, data)) {
+    const error = ajv.errorsText().replace(/, /gi, "\n");
+    throw Error(`Schema Error(${title}) -\n${error}`);
+  }
+  return null;
+}
+
+export function validate(jobs, processors, final_actions) {
+  schemaValidate("Jobs", jobsSchema, jobs);
+  schemaValidate("Processors", processorsSchema, processors);
+  schemaValidate("Final Actions", finalActionsSchema, final_actions);
+
+  const data = cloneDeep(processors);
+  if (!data[data.start])
+    throw Error(`Integration Error -\nStart "${data.start}" is not exists.`);
+  delete data.start;
+
+  for (const pId in data) {
+    data[pId].jobList.forEach(job => {
+      if (!jobs[job])
+        throw Error(
+          `Integration Error -\nThe job "${job}" in "${pId}" is not exists.`
+        );
+    });
+
+    if (data[pId].next) {
+      Object.values(data[pId].next).forEach(next => {
+        if (!data[next])
+          throw Error(
+            `Integration Error -\nThe next property "${next}" in "${pId}" is not exists.`
+          );
+      });
+    } else {
+      if (!final_actions[pId]) {
+        throw Error(
+          `Integration Error -\nThere is no Final Action as "${pId}"`
+        );
+      }
+    }
+  }
 }

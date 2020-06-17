@@ -24,7 +24,7 @@
                             "minItems": 1,
                             "items": {
                                 "type": "object",
-                                "required": ["key","value","exp"],
+                                "required": ["key","exp"],
                                 "properties": {
                                     "key": { "type": "string", "default": "" },
                                     "value": { "type": "string", "default": "" },
@@ -154,7 +154,8 @@
                     "type": "string",
                     "enum": [
                         "device/snapshot",
-                        "custom"
+                        "custom",
+                        "converter/custom"
                     ]
                 },
                 "info": {
@@ -304,7 +305,7 @@
 					"properties": {
 						"fields": {
 							"type": "array",
-							"title": "Table Name",
+							"title": "Field",
 							"items": {
 								"type": "string"
 							}

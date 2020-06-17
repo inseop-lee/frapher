@@ -10,18 +10,20 @@ import {
   initChart,
   getNewNodeName,
   getBranchCondition,
-  hasBranchChild
+  hasBranchChild,
+  uuidv4,
 } from "../../container/utils";
 import { NodePort } from "../../container/constants";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import { actionCreators as NodeItemActions } from "../../store/modules/nodeItem";
 import { ContextMenu, MenuItem, ContextMenuTrigger } from "react-contextmenu";
+
 import "./NodeCanvas.css";
 
 const EDIT_NODE = "EDIT_NODE";
 const INPUT_BRANCH = "INPUT_BRANCH";
-const HEADER_HEIGHT = 50;
+const HEADER_HEIGHT = 55;
 
 class NodeCanvas extends React.Component {
   constructor(props) {
@@ -33,7 +35,7 @@ class NodeCanvas extends React.Component {
       links: chart.links,
       selected: cloneDeep(this.props.selected),
       hovered: {},
-      modalData: null
+      modalData: null,
     };
     this.handleCloseModal = this.handleCloseModal.bind(this);
     this.onSelectChild = (nodeId, id) =>
@@ -50,22 +52,33 @@ class NodeCanvas extends React.Component {
       };
       return obj;
     }, {});
+    this.flowChartKey = uuidv4();
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if (this.props.initRule) {
-      if (!isEqual(prevProps.initRule, this.props.initRule)) {
-        const chart = initChart(this.props.initRule.nodes);
-        const newState = {
+    if (this.props.selected.id !== prevProps.selected.id) {
+      this.setState({ selected: cloneDeep(this.props.selected) });
+    }
+    if (this.props.init) {
+      if (!isEqual(prevProps.init, this.props.init)) {
+        this.flowChartKey = uuidv4();
+        const chart = initChart(this.props.init.rule.nodes);
+        delete this.state.nodes;
+        this.setState({
           offset: { x: 0, y: HEADER_HEIGHT },
           nodes: chart.nodes,
           links: chart.links,
-          selected: {},
-          hovered: {},
-          modalData: null
-        };
-        this.setState(newState);
-        this.props.NodeItemActions.updateRule(this.props.initRule);
+        });
+        this.props.NodeItemActions.updateRule(
+          this.props.init.rule,
+          this.props.init.meta
+        );
+      }
+    }
+    if (isEqual(this.props.init, prevProps.init)) {
+      if (!isEqual(this.props.rule.children, prevProps.rule.children)) {
+        this.flowChartKey = uuidv4();
+        this.forceUpdate();
       }
     }
   }
@@ -75,18 +88,33 @@ class NodeCanvas extends React.Component {
     const LINK_CLICK = "onLinkClick";
     const CANVAS_CLICK = "onCanvasClick";
     const DRAG_NODE = "onDragNode";
+    const DRAG_NODE_STOP = "onDragNodeStop";
     const NODE = "node";
+    const LINK = "link";
     const DELETE_KEY = "onDeleteKey";
-    const { nodeId } = args;
+    const fromId = (link) =>
+      link.from.portId === NodePort.OUT ? link.from.nodeId : link.to.nodeId;
+    const toId = (link) =>
+      link.to.portId === NodePort.IN ? link.to.nodeId : link.from.nodeId;
+    const { nodeId, id, linkId } = args;
     switch (action) {
+      case DRAG_NODE:
+        this.props.NodeItemActions.selectItem(id, NODE);
+        break;
+      case DRAG_NODE_STOP:
+        this.props.NodeItemActions.selectItem(id, NODE);
+        break;
       case NODE_CLICK:
         this.props.NodeItemActions.selectItem(nodeId, NODE);
         break;
       case CANVAS_CLICK:
-      case LINK_CLICK:
-        this.props.NodeItemActions.selectItem(null, null);
         break;
-      case DRAG_NODE:
+      case LINK_CLICK:
+        const link = this.state.links[linkId];
+        this.props.NodeItemActions.selectItem(
+          { fromId: fromId(link), toId: toId(link) },
+          LINK
+        );
         break;
       case DELETE_KEY:
         switch (this.state.selected.type) {
@@ -94,16 +122,10 @@ class NodeCanvas extends React.Component {
             this.props.NodeItemActions.deleteNode(this.props.selected.id);
             break;
           case "link":
-            const link = this.state.links[this.state.selected.id];
-            const fromId =
-              link.from.portId === NodePort.OUT
-                ? link.from.nodeId
-                : link.to.nodeId;
-            const toId =
-              link.to.portId === NodePort.IN
-                ? link.to.nodeId
-                : link.from.nodeId;
-            this.props.NodeItemActions.deleteLink(fromId, toId);
+            this.props.NodeItemActions.deleteLink(
+              this.state.selected.id.fromId,
+              this.state.selected.id.toId
+            );
             break;
           default:
             break;
@@ -126,10 +148,10 @@ class NodeCanvas extends React.Component {
                 title: "ID",
                 id: "nodeId",
                 defaultValue: this.props.selected.id,
-                type: "text"
-              }
-            ]
-          }
+                type: "text",
+              },
+            ],
+          },
         });
         break;
       case INPUT_BRANCH:
@@ -139,8 +161,8 @@ class NodeCanvas extends React.Component {
             title: "Input branch condition",
             type: INPUT_BRANCH,
             inputArray: inputArray,
-            data
-          }
+            data,
+          },
         });
         break;
       default:
@@ -186,7 +208,7 @@ class NodeCanvas extends React.Component {
     this.setState({
       nodes: nodes,
       links: links,
-      selected: { id: toId, type: "node" }
+      selected: { id: toId, type: "node" },
     });
   }
 
@@ -209,14 +231,12 @@ class NodeCanvas extends React.Component {
   }
 
   handleCloseModal(e) {
+    const links = cloneDeep(this.state.links);
     if (this.state.modalData.type === INPUT_BRANCH) {
       const linkId = this.state.modalData.data.linkId;
-      const links = cloneDeep(this.state.links);
       delete links[linkId];
-      this.setState({ links: links });
     }
-    this.setState({ modalData: null });
-    this.setState({ offset: { x: 0, y: HEADER_HEIGHT } });
+    this.setState({ links: links, modalData: null, offset: { x: 0, y: 0 } });
   }
 
   handleDeleteNode() {
@@ -228,7 +248,7 @@ class NodeCanvas extends React.Component {
     const chart = cloneDeep(this.state);
     if (chart.selected.type === "node" && chart.selected.id) {
       var node_1 = chart.nodes[chart.selected.id];
-      Object.keys(chart.links).forEach(function(linkId) {
+      Object.keys(chart.links).forEach(function (linkId) {
         var link = chart.links[linkId];
         if (link.from.nodeId === node_1.id || link.to.nodeId === node_1.id) {
           delete chart.links[link.id];
@@ -249,20 +269,20 @@ class NodeCanvas extends React.Component {
     const nodes = cloneDeep(this.state.nodes);
     const [x, y] = [
       e.clientX - this.state.offset.x - offsetLeft,
-      e.clientY - this.state.offset.y - offsetTop
+      e.clientY - this.state.offset.y - offsetTop,
     ];
     const nodeId = getNewNodeName(this.props.rule);
     const ports = !data.isFinal
       ? {
           [NodePort.IN]: { id: NodePort.IN, type: "left" },
-          [NodePort.OUT]: { id: NodePort.OUT, type: "right" }
+          [NodePort.OUT]: { id: NodePort.OUT, type: "right" },
         }
       : { [NodePort.IN]: { id: NodePort.IN, type: "left" } };
     const newNode = {
       id: nodeId,
       ports: ports,
       position: { x: x, y: y },
-      type: "input-output"
+      type: "input-output",
     };
     nodes[nodeId] = newNode;
     this.props.NodeItemActions.addNode(nodeId, data.isFinal);
@@ -292,7 +312,7 @@ class NodeCanvas extends React.Component {
       this.OpenModal(INPUT_BRANCH, {
         fromId: fromId,
         toId: toId,
-        linkId: linkId
+        linkId: linkId,
       });
       return true;
     } else {
@@ -303,7 +323,7 @@ class NodeCanvas extends React.Component {
   }
 
   getBranchConditionInput(fromId) {
-    const conditionToText = condition => {
+    const conditionToText = (condition) => {
       const expMap = { eq: "=", ne: "≠", lt: "<", le: "≤", gt: ">", ge: "≥" };
       switch (condition.exp) {
         case "null":
@@ -336,45 +356,44 @@ class NodeCanvas extends React.Component {
     return getBranchCondition(this.props.rule, fromId).map((item, index) => ({
       title: conditionToText(item),
       id: `condition-${index}`,
-      type: "checkbox"
+      type: "checkbox",
     }));
   }
 
   render() {
     return (
       <>
-        <div id="node-canvas">
-          <ContextMenu id="nodecanvas-context-menu">
-            <MenuItem data={{ isFinal: false }} onClick={this.handleAddNode}>
-              Add Processor
-            </MenuItem>
-            <MenuItem data={{ isFinal: true }} onClick={this.handleAddNode}>
-              Add Final Action
-            </MenuItem>
-          </ContextMenu>
-          <ContextMenuTrigger id="nodecanvas-context-menu" holdToDisplay={-1}>
-            <FlowChart
-              chart={this.state}
-              callbacks={this.callbacks}
-              config={{
-                validateLink: this.handleAddLink
-              }}
-              Components={{
-                NodeInner: props =>
-                  NodeInnerTemplate({
-                    ...props,
-                    childDataSet: getChildDataSetById(
-                      props.node.id,
-                      this.props.rule
-                    ),
-                    selected: this.props.selected.id === props.node.id,
-                    onClickEditId: () => this.OpenModal(EDIT_NODE),
-                    onClickDelete: this.handleDeleteNode
-                  })
-              }}
-            />
-          </ContextMenuTrigger>
-        </div>
+        <ContextMenu id="nodecanvas-context-menu">
+          <MenuItem data={{ isFinal: false }} onClick={this.handleAddNode}>
+            Add Processor
+          </MenuItem>
+          <MenuItem data={{ isFinal: true }} onClick={this.handleAddNode}>
+            Add Final Action
+          </MenuItem>
+        </ContextMenu>
+        <ContextMenuTrigger id="nodecanvas-context-menu" holdToDisplay={-1}>
+          <FlowChart
+            key={this.flowChartKey}
+            chart={this.state}
+            callbacks={this.callbacks}
+            config={{
+              validateLink: this.handleAddLink,
+            }}
+            Components={{
+              NodeInner: (props) =>
+                NodeInnerTemplate({
+                  ...props,
+                  childDataSet: getChildDataSetById(
+                    props.node.id,
+                    this.props.rule
+                  ),
+                  selected: this.props.selected.id === props.node.id,
+                  onClickEditId: () => this.OpenModal(EDIT_NODE),
+                  onClickDelete: this.handleDeleteNode,
+                }),
+            }}
+          />
+        </ContextMenuTrigger>
         <InputModal
           isOpen={this.state.modalData ? true : false}
           onSubmit={this.handleSubmitModal}
@@ -388,7 +407,7 @@ class NodeCanvas extends React.Component {
 
 export default connect(
   ({ nodeItem }) => nodeItem,
-  dispatch => ({
-    NodeItemActions: bindActionCreators(NodeItemActions, dispatch)
+  (dispatch) => ({
+    NodeItemActions: bindActionCreators(NodeItemActions, dispatch),
   })
 )(NodeCanvas);

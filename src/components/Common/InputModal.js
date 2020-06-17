@@ -25,7 +25,7 @@ function InputModal({ isOpen, onSubmit, onClose, data }) {
   };
 
   return (
-    <Modal show={isOpen} onHide={handleClose}>
+    <Modal show={isOpen} onHide={handleClose} enforceFocus={false}>
       <form onSubmit={handleSubmit}>
         <Modal.Header closeButton>{title}</Modal.Header>
         <Modal.Body>
@@ -82,7 +82,7 @@ function InputModal({ isOpen, onSubmit, onClose, data }) {
         </Modal.Body>
         <Modal.Footer>
           <Button type="submit">Submit</Button>
-          <Button variant="danger" onClick={onClose}>
+          <Button variant="secondary" onClick={onClose}>
             Cancel
           </Button>
         </Modal.Footer>

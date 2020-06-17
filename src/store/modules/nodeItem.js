@@ -14,936 +14,26 @@ const ADD_NEXT_NODE = "ADD_NEXT_NODE";
 const DELETE_LINK = "DELETE_LINK";
 const SET_INIT_RULE = "SET_INIT_RULE";
 const UPDATE_RULE = "UPDATE_RULE";
+const DELETE_NEXT_BRANCH = "DELETE_NEXT_BRANCH";
+const EDIT_META = "EDIT_META";
+const INIT_CHANGED = "INIT_CHANGED";
 
 // Reducer
 const initialState = {
-  selected: { type: "node", id: "node1" },
+  selected: { type: null, id: null },
+  changed: false,
+  meta: {},
   rule: {
     nodes: {
-      start: "c001",
-      c001: {
-        jobList: ["ctm001"],
-        next: {
-          default: "b001"
-        }
-      },
-      b001: {
-        jobList: ["bs001"],
-        next: {
-          "00000": "error_invalid_capacity",
-          "00001": "error_continuous",
-          "00010": "c1000",
-          "00100": "c500",
-          "01000": "c120",
-          "10000": "cw001"
-        }
-      },
-      cw001: {
-        jobList: ["cw001"],
-        next: {
-          default: "bs002"
-        }
-      },
-      bs002: {
-        jobList: ["bs002"],
-        next: {
-          "0": "bs003",
-          "1": "error_no_user"
-        }
-      },
-      bs003: {
-        jobList: ["bs003"],
-        next: {
-          "100100": "cc120",
-          "100010": "cc500",
-          "100001": "cc1000",
-          "010100": "cn120",
-          "010010": "cn500",
-          "010001": "cn1000",
-          "001100": "error_hot",
-          "001010": "error_hot",
-          "001001": "error_hot"
-        }
-      },
-      cc120: {
-        jobList: []
-      },
-      cc500: {
-        jobList: []
-      },
-      cc1000: {
-        jobList: []
-      },
-      cn120: {
-        jobList: []
-      },
-      cn500: {
-        jobList: []
-      },
-      cn1000: {
-        jobList: []
-      },
-      c120: {
-        jobList: []
-      },
-      c500: {
-        jobList: []
-      },
-      c1000: {
-        jobList: []
-      },
-      error_invalid_capacity: {
-        jobList: []
-      },
-      error_continuous: {
-        jobList: []
-      },
-      error_hot: {
-        jobList: []
-      },
-      error_no_user: {
-        jobList: []
+      start: "new_node_1",
+      new_node_1: {
+        jobList: [],
+        next: {}
       }
     },
     children: {
-      final_actions: {
-        cc120: [
-          {
-            type: "ctrl/tag",
-            message: [
-              {
-                class: "WP",
-                ctrl_key: "waterDispenseStart",
-                code: "waterDispenseStart",
-                param: {
-                  waterSelection: "COLD_WATER",
-                  waterAmountMode: 1
-                },
-                device_id: "$.device.id"
-              }
-            ],
-            feedback_list: {
-              SUCCESS: {
-                type: "feedback/response",
-                message: [
-                  {
-                    code: "WP_CTRL_DISPENSE_COLD_120ML"
-                  }
-                ]
-              },
-              FAIL_WP_SPECIAL_MODE: {
-                type: "feedback/response",
-                message: [
-                  {
-                    code: "WP_CTRL_SPECIAL_MODE"
-                  }
-                ]
-              },
-              FAIL_ERROR: {
-                type: "feedback/response",
-                message: [
-                  {
-                    code: "WP_CTRL_ERROR"
-                  }
-                ]
-              },
-              FAIL_SAME_VALUE: {
-                type: "feedback/response",
-                message: [
-                  {
-                    code: "WP_CTRL_DISPENSE_ALREADY"
-                  }
-                ]
-              },
-              FAIL_CTRL_0106: {
-                type: "feedback/response",
-                message: [
-                  {
-                    code: "External/Error/Network"
-                  }
-                ]
-              }
-            }
-          }
-        ],
-        cc500: [
-          {
-            type: "ctrl/tag",
-            message: [
-              {
-                class: "WP",
-                ctrl_key: "waterDispenseStart",
-                code: "waterDispenseStart",
-                param: {
-                  waterSelection: "COLD_WATER",
-                  waterAmountMode: 2
-                },
-                device_id: "$.device.id"
-              }
-            ],
-            feedback_list: {
-              SUCCESS: {
-                type: "feedback/response",
-                message: [
-                  {
-                    code: "WP_CTRL_DISPENSE_COLD_500ML"
-                  }
-                ]
-              },
-              FAIL_WP_SPECIAL_MODE: {
-                type: "feedback/response",
-                message: [
-                  {
-                    code: "WP_CTRL_SPECIAL_MODE"
-                  }
-                ]
-              },
-              FAIL_ERROR: {
-                type: "feedback/response",
-                message: [
-                  {
-                    code: "WP_CTRL_ERROR"
-                  }
-                ]
-              },
-              FAIL_SAME_VALUE: {
-                type: "feedback/response",
-                message: [
-                  {
-                    code: "WP_CTRL_DISPENSE_ALREADY"
-                  }
-                ]
-              },
-              FAIL_CTRL_0106: {
-                type: "feedback/response",
-                message: [
-                  {
-                    code: "External/Error/Network"
-                  }
-                ]
-              }
-            }
-          }
-        ],
-        cc1000: [
-          {
-            type: "ctrl/tag",
-            message: [
-              {
-                class: "WP",
-                ctrl_key: "waterDispenseStart",
-                code: "waterDispenseStart",
-                param: {
-                  waterSelection: "COLD_WATER",
-                  waterAmountMode: 3
-                },
-                device_id: "$.device.id"
-              }
-            ],
-            feedback_list: {
-              SUCCESS: {
-                type: "feedback/response",
-                message: [
-                  {
-                    code: "WP_CTRL_DISPENSE_COLD_1000ML"
-                  }
-                ]
-              },
-              FAIL_WP_SPECIAL_MODE: {
-                type: "feedback/response",
-                message: [
-                  {
-                    code: "WP_CTRL_SPECIAL_MODE"
-                  }
-                ]
-              },
-              FAIL_ERROR: {
-                type: "feedback/response",
-                message: [
-                  {
-                    code: "WP_CTRL_ERROR"
-                  }
-                ]
-              },
-              FAIL_SAME_VALUE: {
-                type: "feedback/response",
-                message: [
-                  {
-                    code: "WP_CTRL_DISPENSE_ALREADY"
-                  }
-                ]
-              },
-              FAIL_CTRL_0106: {
-                type: "feedback/response",
-                message: [
-                  {
-                    code: "External/Error/Network"
-                  }
-                ]
-              }
-            }
-          }
-        ],
-        cn120: [
-          {
-            type: "ctrl/tag",
-            message: [
-              {
-                class: "WP",
-                ctrl_key: "waterDispenseStart",
-                code: "waterDispenseStart",
-                param: {
-                  waterSelection: "NORMAL_WATER",
-                  waterAmountMode: 1
-                },
-                device_id: "$.device.id"
-              }
-            ],
-            feedback_list: {
-              SUCCESS: {
-                type: "feedback/response",
-                message: [
-                  {
-                    code: "WP_CTRL_DISPENSE_NORMAL_120ML"
-                  }
-                ]
-              },
-              FAIL_WP_SPECIAL_MODE: {
-                type: "feedback/response",
-                message: [
-                  {
-                    code: "WP_CTRL_SPECIAL_MODE"
-                  }
-                ]
-              },
-              FAIL_ERROR: {
-                type: "feedback/response",
-                message: [
-                  {
-                    code: "WP_CTRL_ERROR"
-                  }
-                ]
-              },
-              FAIL_SAME_VALUE: {
-                type: "feedback/response",
-                message: [
-                  {
-                    code: "WP_CTRL_DISPENSE_ALREADY"
-                  }
-                ]
-              },
-              FAIL_CTRL_0106: {
-                type: "feedback/response",
-                message: [
-                  {
-                    code: "External/Error/Network"
-                  }
-                ]
-              }
-            }
-          }
-        ],
-        cn500: [
-          {
-            type: "ctrl/tag",
-            message: [
-              {
-                class: "WP",
-                ctrl_key: "waterDispenseStart",
-                code: "waterDispenseStart",
-                param: {
-                  waterSelection: "NORMAL_WATER",
-                  waterAmountMode: 2
-                },
-                device_id: "$.device.id"
-              }
-            ],
-            feedback_list: {
-              SUCCESS: {
-                type: "feedback/response",
-                message: [
-                  {
-                    code: "WP_CTRL_DISPENSE_NORMAL_500ML"
-                  }
-                ]
-              },
-              FAIL_WP_SPECIAL_MODE: {
-                type: "feedback/response",
-                message: [
-                  {
-                    code: "WP_CTRL_SPECIAL_MODE"
-                  }
-                ]
-              },
-              FAIL_ERROR: {
-                type: "feedback/response",
-                message: [
-                  {
-                    code: "WP_CTRL_ERROR"
-                  }
-                ]
-              },
-              FAIL_SAME_VALUE: {
-                type: "feedback/response",
-                message: [
-                  {
-                    code: "WP_CTRL_DISPENSE_ALREADY"
-                  }
-                ]
-              },
-              FAIL_CTRL_0106: {
-                type: "feedback/response",
-                message: [
-                  {
-                    code: "External/Error/Network"
-                  }
-                ]
-              }
-            }
-          }
-        ],
-        cn1000: [
-          {
-            type: "ctrl/tag",
-            message: [
-              {
-                class: "WP",
-                ctrl_key: "waterDispenseStart",
-                code: "waterDispenseStart",
-                param: {
-                  waterSelection: "NORMAL_WATER",
-                  waterAmountMode: 3
-                },
-                device_id: "$.device.id"
-              }
-            ],
-            feedback_list: {
-              SUCCESS: {
-                type: "feedback/response",
-                message: [
-                  {
-                    code: "WP_CTRL_DISPENSE_NORMAL_1000ML"
-                  }
-                ]
-              },
-              FAIL_WP_SPECIAL_MODE: {
-                type: "feedback/response",
-                message: [
-                  {
-                    code: "WP_CTRL_SPECIAL_MODE"
-                  }
-                ]
-              },
-              FAIL_ERROR: {
-                type: "feedback/response",
-                message: [
-                  {
-                    code: "WP_CTRL_ERROR"
-                  }
-                ]
-              },
-              FAIL_SAME_VALUE: {
-                type: "feedback/response",
-                message: [
-                  {
-                    code: "WP_CTRL_DISPENSE_ALREADY"
-                  }
-                ]
-              },
-              FAIL_CTRL_0106: {
-                type: "feedback/response",
-                message: [
-                  {
-                    code: "External/Error/Network"
-                  }
-                ]
-              }
-            }
-          }
-        ],
-        c120: [
-          {
-            type: "ctrl/tag",
-            message: [
-              {
-                class: "WP",
-                ctrl_key: "waterDispenseStart",
-                code: "waterDispenseStart",
-                param: {
-                  waterSelection: "",
-                  waterAmountMode: "1"
-                },
-                device_id: "$.device.id"
-              }
-            ],
-            feedback_list: {
-              SUCCESS_WP_COLD_120ML: {
-                type: "feedback/response",
-                message: [
-                  {
-                    code: "WP_CTRL_DISPENSE_COLD_120ML"
-                  }
-                ]
-              },
-              SUCCESS_WP_COLD_500ML: {
-                type: "feedback/response",
-                message: [
-                  {
-                    code: "WP_CTRL_DISPENSE_COLD_500ML"
-                  }
-                ]
-              },
-              SUCCESS_WP_COLD_1000ML: {
-                type: "feedback/response",
-                message: [
-                  {
-                    code: "WP_CTRL_DISPENSE_COLD_1000ML"
-                  }
-                ]
-              },
-              SUCCESS_WP_NORMAL_120ML: {
-                type: "feedback/response",
-                message: [
-                  {
-                    code: "WP_CTRL_DISPENSE_NORMAL_120ML"
-                  }
-                ]
-              },
-              SUCCESS_WP_NORMAL_500ML: {
-                type: "feedback/response",
-                message: [
-                  {
-                    code: "WP_CTRL_DISPENSE_NORMAL_500ML"
-                  }
-                ]
-              },
-              SUCCESS_WP_NORMAL_1000ML: {
-                type: "feedback/response",
-                message: [
-                  {
-                    code: "WP_CTRL_DISPENSE_NORMAL_1000ML"
-                  }
-                ]
-              },
-              FAIL_WP_ONEMORE_TIMEOUT: {
-                type: "feedback/response",
-                message: [
-                  {
-                    code: "WP_CTRL_DISPENSE_MORE_1MIN"
-                  }
-                ]
-              },
-              FAIL_WP_SPECIAL_MODE: {
-                type: "feedback/response",
-                message: [
-                  {
-                    code: "WP_CTRL_SPECIAL_MODE"
-                  }
-                ]
-              },
-              FAIL_ERROR: {
-                type: "feedback/response",
-                message: [
-                  {
-                    code: "WP_CTRL_ERROR"
-                  }
-                ]
-              },
-              FAIL_SAME_VALUE: {
-                type: "feedback/response",
-                message: [
-                  {
-                    code: "WP_CTRL_DISPENSE_ALREADY"
-                  }
-                ]
-              },
-              FAIL_CTRL_0106: {
-                type: "feedback/response",
-                message: [
-                  {
-                    code: "External/Error/Network"
-                  }
-                ]
-              }
-            }
-          }
-        ],
-        c500: [
-          {
-            type: "ctrl/tag",
-            message: [
-              {
-                class: "WP",
-                ctrl_key: "waterDispenseStart",
-                code: "waterDispenseStart",
-                param: {
-                  waterSelection: "",
-                  waterAmountMode: "2"
-                },
-                device_id: "$.device.id"
-              }
-            ],
-            feedback_list: {
-              SUCCESS_WP_COLD_120ML: {
-                type: "feedback/response",
-                message: [
-                  {
-                    code: "WP_CTRL_DISPENSE_COLD_120ML"
-                  }
-                ]
-              },
-              SUCCESS_WP_COLD_500ML: {
-                type: "feedback/response",
-                message: [
-                  {
-                    code: "WP_CTRL_DISPENSE_COLD_500ML"
-                  }
-                ]
-              },
-              SUCCESS_WP_COLD_1000ML: {
-                type: "feedback/response",
-                message: [
-                  {
-                    code: "WP_CTRL_DISPENSE_COLD_1000ML"
-                  }
-                ]
-              },
-              SUCCESS_WP_NORMAL_120ML: {
-                type: "feedback/response",
-                message: [
-                  {
-                    code: "WP_CTRL_DISPENSE_NORMAL_120ML"
-                  }
-                ]
-              },
-              SUCCESS_WP_NORMAL_500ML: {
-                type: "feedback/response",
-                message: [
-                  {
-                    code: "WP_CTRL_DISPENSE_NORMAL_500ML"
-                  }
-                ]
-              },
-              SUCCESS_WP_NORMAL_1000ML: {
-                type: "feedback/response",
-                message: [
-                  {
-                    code: "WP_CTRL_DISPENSE_NORMAL_1000ML"
-                  }
-                ]
-              },
-              FAIL_WP_ONEMORE_TIMEOUT: {
-                type: "feedback/response",
-                message: [
-                  {
-                    code: "WP_CTRL_DISPENSE_MORE_1MIN"
-                  }
-                ]
-              },
-              FAIL_WP_SPECIAL_MODE: {
-                type: "feedback/response",
-                message: [
-                  {
-                    code: "WP_CTRL_SPECIAL_MODE"
-                  }
-                ]
-              },
-              FAIL_ERROR: {
-                type: "feedback/response",
-                message: [
-                  {
-                    code: "WP_CTRL_ERROR"
-                  }
-                ]
-              },
-              FAIL_SAME_VALUE: {
-                type: "feedback/response",
-                message: [
-                  {
-                    code: "WP_CTRL_DISPENSE_ALREADY"
-                  }
-                ]
-              },
-              FAIL_CTRL_0106: {
-                type: "feedback/response",
-                message: [
-                  {
-                    code: "External/Error/Network"
-                  }
-                ]
-              }
-            }
-          }
-        ],
-        c1000: [
-          {
-            type: "ctrl/tag",
-            message: [
-              {
-                class: "WP",
-                ctrl_key: "waterDispenseStart",
-                code: "waterDispenseStart",
-                param: {
-                  waterSelection: "",
-                  waterAmountMode: "3"
-                },
-                device_id: "$.device.id"
-              }
-            ],
-            feedback_list: {
-              SUCCESS_WP_COLD_120ML: {
-                type: "feedback/response",
-                message: [
-                  {
-                    code: "WP_CTRL_DISPENSE_COLD_120ML"
-                  }
-                ]
-              },
-              SUCCESS_WP_COLD_500ML: {
-                type: "feedback/response",
-                message: [
-                  {
-                    code: "WP_CTRL_DISPENSE_COLD_500ML"
-                  }
-                ]
-              },
-              SUCCESS_WP_COLD_1000ML: {
-                type: "feedback/response",
-                message: [
-                  {
-                    code: "WP_CTRL_DISPENSE_COLD_1000ML"
-                  }
-                ]
-              },
-              SUCCESS_WP_NORMAL_120ML: {
-                type: "feedback/response",
-                message: [
-                  {
-                    code: "WP_CTRL_DISPENSE_NORMAL_120ML"
-                  }
-                ]
-              },
-              SUCCESS_WP_NORMAL_500ML: {
-                type: "feedback/response",
-                message: [
-                  {
-                    code: "WP_CTRL_DISPENSE_NORMAL_500ML"
-                  }
-                ]
-              },
-              SUCCESS_WP_NORMAL_1000ML: {
-                type: "feedback/response",
-                message: [
-                  {
-                    code: "WP_CTRL_DISPENSE_NORMAL_1000ML"
-                  }
-                ]
-              },
-              FAIL_WP_ONEMORE_TIMEOUT: {
-                type: "feedback/response",
-                message: [
-                  {
-                    code: "WP_CTRL_DISPENSE_MORE_1MIN"
-                  }
-                ]
-              },
-              FAIL_WP_SPECIAL_MODE: {
-                type: "feedback/response",
-                message: [
-                  {
-                    code: "WP_CTRL_SPECIAL_MODE"
-                  }
-                ]
-              },
-              FAIL_ERROR: {
-                type: "feedback/response",
-                message: [
-                  {
-                    code: "WP_CTRL_ERROR"
-                  }
-                ]
-              },
-              FAIL_SAME_VALUE: {
-                type: "feedback/response",
-                message: [
-                  {
-                    code: "WP_CTRL_DISPENSE_ALREADY"
-                  }
-                ]
-              },
-              FAIL_CTRL_0106: {
-                type: "feedback/response",
-                message: [
-                  {
-                    code: "External/Error/Network"
-                  }
-                ]
-              }
-            }
-          }
-        ],
-        error_continuous: [
-          {
-            type: "feedback/response",
-            message: [
-              {
-                code: "WP_CTRL_DISPENSE_CONTINUOUS"
-              }
-            ]
-          }
-        ],
-        error_invalid_capacity: [
-          {
-            type: "feedback/response",
-            message: [
-              {
-                code: "WP_CTRL_DISPENSE_INVALID_CAPACITY"
-              }
-            ]
-          }
-        ],
-        error_hot: [
-          {
-            type: "feedback/response",
-            message: [
-              {
-                code: "WP_CTRL_DISPENSE_HOT_WATER"
-              }
-            ]
-          }
-        ],
-        error_no_user: [
-          {
-            type: "feedback/response",
-            message: [
-              {
-                code: "WP_CTRL_DISPENSE_NO_USER"
-              }
-            ]
-          }
-        ]
-      },
-      jobs: {
-        ctm001: {
-          result: "ctm001",
-          type: "control_tag_message",
-          info: {
-            ctrlKey: "waterDispenseStart"
-          }
-        },
-        bs001: {
-          result: "bs001",
-          type: "branch",
-          info: {
-            condition: [
-              {
-                key: "$.slots.capacity",
-                value: "default",
-                exp: "eq"
-              },
-              {
-                key: "$.slots.capacity",
-                value: "120",
-                exp: "eq"
-              },
-              {
-                key: "$.slots.capacity",
-                value: "500",
-                exp: "eq"
-              },
-              {
-                key: "$.slots.capacity",
-                value: "1000",
-                exp: "eq"
-              },
-              {
-                key: "$.slots.capacity",
-                value: "continuous",
-                exp: "eq"
-              }
-            ]
-          }
-        },
-        cw001: {
-          result: "cw001",
-          source: "custom",
-          type: "http",
-          info: {
-            url: {
-              path:
-                "/v1/backend/livingai/devices/{deviceId}/custom-water-request",
-              parameter: {
-                deviceId: "$.device.id"
-              }
-            },
-            domain: "kic-st-service.lgthinq.com",
-            method: "GET",
-            port: "46030",
-            headers: {
-              "Content-Type": "application/json;charset=UTF-8",
-              Accept: "application/json",
-              "x-country-code": "$.countryCode",
-              "x-service-phase": "$.servicePhase",
-              "x-api-key": "VGhpblEyLjAgU0VSVklDRQ==",
-              "x-message-id": "$.messageId"
-            },
-            parameters: {
-              specifierCode: "$.slots.user"
-            }
-          }
-        },
-        bs002: {
-          result: "bs002",
-          type: "branch",
-          info: {
-            condition: [
-              {
-                key: "$.cw001.cw001.result.waterType",
-                value: "",
-                exp: "null"
-              }
-            ]
-          }
-        },
-        bs003: {
-          result: "bs003",
-          type: "branch",
-          info: {
-            condition: [
-              {
-                key: "$.cw001.cw001.result.waterType",
-                value: "cold",
-                exp: "eq"
-              },
-              {
-                key: "$.cw001.cw001.result.waterType",
-                value: "normal",
-                exp: "eq"
-              },
-              {
-                key: "$.cw001.cw001.result.waterType",
-                value: "hot",
-                exp: "eq"
-              },
-              {
-                key: "$.cw001.cw001.result.waterRequestAmount",
-                value: "120",
-                exp: "eq"
-              },
-              {
-                key: "$.cw001.cw001.result.waterRequestAmount",
-                value: "500",
-                exp: "eq"
-              },
-              {
-                key: "$.cw001.cw001.result.waterRequestAmount",
-                value: "1000",
-                exp: "eq"
-              }
-            ]
-          }
-        }
-      }
+      final_actions: {},
+      jobs: {}
     }
   }
 };
@@ -1040,17 +130,39 @@ function deleteLink(fromId, toId) {
   };
 }
 
-function setInitRule(rule) {
+function setInitRule(rule = null, meta = null) {
   return {
     type: SET_INIT_RULE,
-    rule
+    rule,
+    meta
   };
 }
 
-function updateRule(rule) {
+function updateRule(rule, meta) {
   return {
     type: UPDATE_RULE,
-    rule
+    rule,
+    meta
+  };
+}
+
+function deleteNextBranch(nodeId, condition) {
+  return {
+    type: DELETE_NEXT_BRANCH,
+    nodeId,
+    condition
+  };
+}
+
+function editMeta(meta) {
+  return {
+    type: EDIT_META,
+    meta
+  };
+}
+function initChanged() {
+  return {
+    type: INIT_CHANGED
   };
 }
 
@@ -1082,6 +194,12 @@ function nodeItem(state = initialState, action) {
       return applySetInitRule(state, action);
     case UPDATE_RULE:
       return applyUpdateRule(state, action);
+    case DELETE_NEXT_BRANCH:
+      return applyDeleteNextBranch(state, action);
+    case EDIT_META:
+      return applyEditMeta(state, action);
+    case INIT_CHANGED:
+      return applyInitChanged(state, action);
     default:
       return state;
   }
@@ -1093,6 +211,7 @@ function applyAddNode(state, { id, isFinal }) {
   const nodeData = isFinal ? { jobList: [] } : { jobList: [], next: {} };
   return {
     ...state,
+    changed: true,
     rule: {
       ...state.rule,
       nodes: {
@@ -1121,6 +240,7 @@ function applyAddChildNode(state, { parentId, id, data, isAction }) {
   const returnState = isAction
     ? {
         ...state,
+        changed: true,
         rule: {
           ...state.rule,
           children: {
@@ -1134,6 +254,7 @@ function applyAddChildNode(state, { parentId, id, data, isAction }) {
       }
     : {
         ...state,
+        changed: true,
         rule: {
           ...state.rule,
           nodes: {
@@ -1170,6 +291,7 @@ function applyEditChildNode(state, { parentId, id, data, isAction }) {
   const returnState = isAction
     ? {
         ...state,
+        changed: true,
         rule: {
           ...state.rule,
           children: {
@@ -1183,6 +305,7 @@ function applyEditChildNode(state, { parentId, id, data, isAction }) {
       }
     : {
         ...state,
+        changed: true,
         rule: {
           ...state.rule,
           children: {
@@ -1205,6 +328,7 @@ function applyEditNextNode(
   nextObj[targetCondition] = nextId;
   return {
     ...state,
+    changed: true,
     rule: {
       ...state.rule,
       nodes: {
@@ -1228,6 +352,7 @@ function applyDeleteChildNode(state, { parentId, id }) {
   delete jobs[id];
   return {
     ...state,
+    changed: true,
     rule: {
       ...state.rule,
       nodes: {
@@ -1263,6 +388,7 @@ function applyEditNodeId(state, { fromId, toId, isStart }) {
 
   return {
     ...state,
+    changed: true,
     rule: {
       ...state.rule,
       nodes: nodes
@@ -1287,6 +413,7 @@ function applyDeleteNode(state, { id }) {
   return {
     ...state,
     selected: {},
+    changed: true,
     rule: {
       ...state.rule,
       nodes: nodes
@@ -1297,6 +424,7 @@ function applyDeleteNode(state, { id }) {
 function applyAddNextNode(state, { fromId, toId, nextKey }) {
   return {
     ...state,
+    changed: true,
     rule: {
       ...state.rule,
       nodes: {
@@ -1319,13 +447,13 @@ function applyDeleteLink(state, { fromId, toId }) {
     const targets = Object.entries(nodes[fromId].next).filter(
       element => element[1] === toId
     );
-    console.log(targets);
     for (const target of targets) {
       delete nodes[fromId].next[target[0]];
     }
   }
   return {
     ...state,
+    changed: true,
     rule: {
       ...state.rule,
       nodes: nodes
@@ -1333,32 +461,74 @@ function applyDeleteLink(state, { fromId, toId }) {
   };
 }
 
-function applySetInitRule(state, { rule }) {
+function applySetInitRule(state, { rule, meta }) {
   if (!rule || !rule.nodes || !rule.nodes.start) {
     return {
       ...state,
-      initRule: {
-        nodes: {
-          start: "new_node_1",
-          new_node_1: {
-            jobList: [],
-            next: {}
-          }
+      changed: false,
+      init: {
+        rule: {
+          nodes: {
+            start: "new_node_1",
+            new_node_1: {
+              jobList: [],
+              next: {}
+            }
+          },
+          children: { jobs: {}, final_actions: {} }
         },
-        children: { jobs:{},final_actions:{}}
+        meta: meta
       }
     };
   }
   return {
     ...state,
-    initRule: rule
+    changed: !meta,
+    init: {
+      rule,
+      meta: meta ? meta : state.meta
+    }
   };
 }
 
-function applyUpdateRule(state, { rule }) {
+function applyUpdateRule(state, { rule, meta }) {
   return {
-    selected: {type:null,id:null},
-    rule: rule
+    ...state,
+    selected: { type: null, id: null },
+    rule: rule,
+    meta: meta,
+    init: null
+  };
+}
+
+function applyDeleteNextBranch(state, { nodeId, condition }) {
+  const node = cloneDeep(state.rule.nodes[nodeId]);
+  delete node.next[condition];
+  return {
+    ...state,
+    changed: true,
+    rule: {
+      ...state.rule,
+      nodes: {
+        ...state.rule.nodes,
+        [nodeId]: node
+      }
+    }
+  };
+}
+
+function applyEditMeta(state, { meta }) {
+  return {
+    ...state,
+    changed: true,
+    meta: meta
+  };
+}
+
+function applyInitChanged(state, action) {
+  return {
+    ...state,
+    changed: false
   };
 }
 
@@ -1376,7 +546,10 @@ const actionCreators = {
   addNextNode,
   deleteLink,
   setInitRule,
-  updateRule
+  updateRule,
+  deleteNextBranch,
+  editMeta,
+  initChanged
 };
 export { actionCreators };
 

@@ -1,143 +1,78 @@
-import React, { useState } from "react";
-import SplitterLayout from "react-splitter-layout";
+import React, { useEffect, useState } from "react";
 import "react-splitter-layout/lib/index.css";
 import NodeCanvas from "./NodeCanvas/NodeCanvas";
-import NodeInfo from "./NodeInfo/NodeInfo";
+import NodeInfo, { LinkInfo } from "./NodeInfo/NodeInfo";
+import Tools from "./Tools/Tools";
+import JsonSchemaInputModal from "./Common/JsonSchemaInputModal";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import { actionCreators as nodeItemActions } from "../store/modules/nodeItem";
-import { Button, Modal } from "react-bootstrap";
-import Editor from "@monaco-editor/react";
-import download from "downloadjs";
+import nodemeta_schema from "../container/schema/nodemeta_schema.json";
 
-const toJson = val => JSON.stringify(val, null, 2);
+function FlowContainer({ rule, meta, selected, changed, NodeItemActions }) {
+  const [onLoad, setOnLoad] = useState(false);
+  const [isOpenNewRuleModal, setOpenNewRuleModal] = useState(false);
+  useEffect(() => {
+    setOnLoad(true);
+    window.ipcRenderer.on("new-rule", function (event, message) {
+      setOpenNewRuleModal(true);
+    });
+    window.ipcRenderer.on("save-rule", function (event, message) {
+      NodeItemActions.initChanged();
+      window.refreshTitle();
+    });
+    window.ipcRenderer.on("import-rule", function (event, data) {
+      NodeItemActions.setInitRule(data.rule, data.meta);
+      setOpenNewRuleModal(false);
+      window.refreshTitle();
+    });
+  }, []);
 
-function FCModal({ title, isOpen, dialogClassName, onClose, child }) {
-  return (
-    <Modal show={isOpen} onHide={onClose} dialogClassName={dialogClassName}>
-      <Modal.Header closeButton>{title}</Modal.Header>
-      <Modal.Body>{child}</Modal.Body>
-    </Modal>
-  );
-}
+  useEffect(() => {
+    console.log(onLoad);
+  }, [onLoad]);
 
-function ExportContents({ rule }) {
-  const monacoEditorOptions = {
-    minimap: {
-      enabled: false
-    },
-    automaticLayout: true
+  useEffect(() => {
+    window.remote.app.showExitPrompt = changed;
+    window.refreshTitle();
+  }, [changed]);
+
+  useEffect(() => {
+    window.remote.app.ruleData = { rule, meta };
+  }, [rule, meta]);
+
+  const handleSubmitNewRule = ({ formData }) => {
+    NodeItemActions.setInitRule(null, formData);
+    setOpenNewRuleModal(false);
+    window.refreshTitle();
   };
-
-  return (
-    <div id="export-modal" className="d-flex justify-content-between">
-      <div>
-        <h4>Jobs</h4>
-        <Editor
-          language="json"
-          value={toJson(rule.children.jobs)}
-          width="65vh"
-          height={600}
-          theme="vs-light"
-          options={monacoEditorOptions}
-        />
-      </div>
-      <div>
-        <h4>Processors</h4>
-        <Editor
-          language="json"
-          value={toJson(rule.nodes)}
-          width="65vh"
-          height={600}
-          theme="vs-light"
-          options={monacoEditorOptions}
-        />
-      </div>
-      <div>
-        <h4>Final Actions</h4>
-        <Editor
-          language="json"
-          value={toJson(rule.children.final_actions)}
-          width="65vh"
-          height={600}
-          theme="vs-light"
-          options={monacoEditorOptions}
-        />
-      </div>
-    </div>
-  );
-}
-
-function FlowContainer({ rule, selected, selectItem, NodeItemActions }) {
-  const MODAL_CLOSED = 0;
-  const EXPORT_MODAL = 1;
-  const NEW_MODAL = 2;
-  const [modalType, setModalType] = useState(MODAL_CLOSED);
-  const openModal = type => {
-    setModalType(type);
-  };
-  const handleCloseModal = e => {
-    setModalType(MODAL_CLOSED);
-  };
-  const handleClickNew = e => {
-    NodeItemActions.setInitRule(null);
-    setModalType(MODAL_CLOSED);
-  };
-  const handleSaveRule = e => {
-    download(toJson(rule), "rule.json", "application/json");
-  };
-
   return (
     <>
-      <div id="container">
-        <SplitterLayout id="container" percentage secondaryInitialSize={35}>
-          <div id="section">
-            <div id="menu">
-              <Button size="sm" onClick={e => openModal(NEW_MODAL)}>
-                New
-              </Button>
-              <Button size="sm" onClick={e => openModal(EXPORT_MODAL)}>
-                Export
-              </Button>
-              <Button size="sm" onClick={e => openModal(EXPORT_MODAL)}>
-                Export
-              </Button>
-              <div className="custom-file">
-                <input
-                  type="file"
-                  className="custom-file-input"
-                  id="customFile"
-                />
-                <label className="custom-file-label" htmlFor="customFile">
-                  Choose file
-                </label>
-              </div>
-            </div>
-            <NodeCanvas />
-          </div>
-          {selected.type === "node" && rule.nodes[selected.id] && (
-            <NodeInfo id="sidebar" />
-          )}
-        </SplitterLayout>
-      </div>
-      <FCModal
-        isOpen={modalType !== MODAL_CLOSED}
-        onClose={handleCloseModal}
-        title={modalType === EXPORT_MODAL ? "Export JSON" : "Are you sure?"}
-        dialogClassName={modalType === EXPORT_MODAL ? "modal-90w" : ""}
-        child={
-          modalType === EXPORT_MODAL ? (
-            <ExportContents rule={rule} />
-          ) : (
-            <div>
-              <Button onClick={handleClickNew}>OK</Button>
-              <Button variant="danger" onClick={handleCloseModal}>
-                Cancel
-              </Button>
-            </div>
-          )
-        }
+      <JsonSchemaInputModal
+        title="New rule"
+        isOpen={isOpenNewRuleModal}
+        onClose={(e) => setOpenNewRuleModal(false)}
+        onSubmit={handleSubmitNewRule}
+        schema={nodemeta_schema}
+        closable={true}
       />
+      <div id="container">
+        <div id="menu">
+          <Tools />
+        </div>
+        <div id="node-canvas">
+          <NodeCanvas />
+        </div>
+        {selected.type === "node" && rule.nodes[selected.id] && (
+          <NodeInfo id="sidebar" key={`nodeInfo-${selected.id}`} />
+        )}
+        {selected.type === "link" && (
+          <LinkInfo
+            selected={selected}
+            selectItem={NodeItemActions.selectItem}
+          />
+        )}
+      </div>
     </>
   );
 }
@@ -145,9 +80,11 @@ function FlowContainer({ rule, selected, selectItem, NodeItemActions }) {
 export default connect(
   ({ nodeItem }) => ({
     selected: nodeItem.selected,
-    rule: nodeItem.rule
+    rule: nodeItem.rule,
+    changed: nodeItem.changed,
+    meta: nodeItem.meta,
   }),
-  dispatch => ({
-    NodeItemActions: bindActionCreators(nodeItemActions, dispatch)
+  (dispatch) => ({
+    NodeItemActions: bindActionCreators(nodeItemActions, dispatch),
   })
 )(FlowContainer);

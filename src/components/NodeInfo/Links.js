@@ -14,7 +14,8 @@ function Links({
   nodeData,
   branchCondition,
   editNextNode,
-  addNextNode
+  addNextNode,
+  deleteNextBranch
 }) {
   const conditionToText = condition => {
     const expMap = { eq: "=", ne: "≠", lt: "<", le: "≤", gt: ">", ge: "≥" };
@@ -71,21 +72,27 @@ function Links({
     );
   });
 
-  const addBranchRef = Array.from({ length: branchCondition.length }, x =>
-    React.createRef()
-  );
+  const addBranchRef = {};
+
+  Object.keys(convertNext).forEach(nodeId => {
+    addBranchRef[nodeId] = Array.from({ length: branchCondition.length }, x =>
+      React.createRef()
+    );
+  });
 
   const isChecked = (bitStr, i) => bitStr[i] === "1";
 
   const original = branchId => branchId.split("-")[1];
 
   const handleSubmit = (e, branchId) => {
-    e.preventDefault();
     const nextId = branchId.split("-")[0];
     const conditionStr = conditionInputRef[branchId].reduce(
       (acc, cur) => acc + (cur.current.checked ? "1" : "0"),
       ""
     );
+
+    console.log(branchId, conditionStr);
+
     if (hasDuplicateCondition(conditionStr)) {
       if (original(branchId) !== conditionStr) {
         alert('The condition "' + conditionStr + '" already exists.');
@@ -97,6 +104,9 @@ function Links({
     editNextNode(nodeId, nextId, original(branchId), conditionStr);
   };
 
+  const handleDelete = (e, branchId) => {
+    deleteNextBranch(nodeId, original(branchId));
+  };
   const hasDuplicateCondition = conditionStr =>
     flatten(Object.values(convertNext)).find(str => str === conditionStr);
 
@@ -123,10 +133,12 @@ function Links({
   const handleSubmitAddBranch = (e, nextId) => {
     e.preventDefault();
     setAddBranch(false);
-    const conditionStr = addBranchRef.reduce(
-      (acc, cur) => acc + (cur.current.checked ? "1" : "0"),
-      ""
-    );
+
+    const conditionStr = addBranchRef[nextId].reduce((acc, cur) => {
+      console.log(cur, cur.current);
+      return acc + (cur.current.checked ? "1" : "0");
+    }, "");
+    console.log(nextId, conditionStr);
     if (hasDuplicateCondition(conditionStr)) {
       alert('The condition "' + conditionStr + '" already exists.');
       return;
@@ -143,7 +155,7 @@ function Links({
     <div className="nextnode">
       <Accordion activeKey={selectedNext}>
         {Object.entries(convertNext)
-          .sort(([a, aC], [b, bC]) => (aC[0] < bC[0] ? 1 : -1))
+          .sort(([a, aC], [b, bC]) => (a > b ? 1 : -1))
           .map(([nextNodeId, conditionList], nextIndex) => (
             <Card key={`nextnode-item-${nextIndex}`}>
               <Accordion.Toggle
@@ -204,8 +216,18 @@ function Links({
                                 >
                                   Save
                                 </Button>
+                                {conditionList.length > 1 && (
+                                  <Button
+                                    variant="danger"
+                                    className="array-add-item"
+                                    size="sm"
+                                    onClick={e => handleDelete(e, branchId)}
+                                  >
+                                    Delete
+                                  </Button>
+                                )}
                                 <Button
-                                  variant="danger"
+                                  variant="secondary"
                                   className="array-add-item"
                                   size="sm"
                                   onClick={e => restoreEdit(branchId)}
@@ -237,7 +259,7 @@ function Links({
                             custom
                             key={`checkbox-add-${nextNodeId}-${branchIndex}`}
                             id={`checkbox-add-${nextNodeId}-${branchIndex}`}
-                            ref={addBranchRef[branchIndex]}
+                            ref={addBranchRef[nextNodeId][branchIndex]}
                             type="checkbox"
                             label={conditionToText(item)}
                           />

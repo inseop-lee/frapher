@@ -1,13 +1,32 @@
-.nodeInfo {
+.node-info {
     width:100%;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: space-between;
 }
-.nodeInfo-container li {
+
+.node-info-close {
+    font-size: 1.5em;
+    cursor: pointer;
+}
+
+.node-info-container {
+    position: absolute;
+    overflow: auto;
+    top:80px;
+    right:1%;
+    width:30%;
+    max-height:90%;
+    border: 1px solid #bbb;
+    padding: 0.5em;
+    background-color: #fff;
+    box-shadow: 0px 0px 8px 0px rgba(0,0,0,0.2);
+}
+
+.node-info-container li {
     padding: 0.7em 1em 0.5em 0.7em;
 }
-.nodeInfo-header{
+.node-info-header{
     padding: 0;
 }
 
@@ -15,13 +34,13 @@
     margin:0;
 }
 
-.nodeInfo-container .card:not(.nested) {
+.node-info-container .card:not(.nested) {
     border-radius:0;
     border-left:0;
     border-right:0;
 }
 
-.nodeInfo-container .card-header {
+.node-info-container .card-header {
     width:100%;
     display: flex;
     align-items: center;
@@ -30,7 +49,7 @@
 }
 
 
-.nodeInfo-container .card-header:hover:not(.no-cursor) {
+.node-info-container .card-header:hover:not(.no-cursor) {
     cursor: pointer;
 }
 
@@ -56,6 +75,7 @@
     justify-content: space-between;
     align-items: center;
     display: flex;
+    flex-flow: row wrap;
 }
 .childList .field-object .nested-key {
     justify-content: space-between;
@@ -67,13 +87,45 @@
 
 .object-header legend {
     font-size:1.2rem;
-    margin-bottom: 0;
+    margin-bottom: 0.3em;
 }
 
 .childList .form-group label { 
     margin:0;
-    width:35%;
+    width:25%;
     font-size:0.9em
+}
+.childList .form-group .field input,.childList .form-group .field .select { 
+    width:75%;
+}
+
+.childList .form-group .select select { 
+    width:75%;
+}
+
+.childList .form-group .field .select select { 
+    width: 100%;
+}
+
+.childList .additional{ 
+    width: 100%;
+}
+.childList .additional > input { 
+    margin:0;
+    width:25% !important;
+    font-size:0.9em
+}
+.childList .additional > .ap-value { 
+    width:65%;
+}
+.childList .additional > .ap-value > input{ 
+    width:100%;
+    font-size:0.9em;
+}
+
+
+.childList .errors {
+    display:none;
 }
 .childList .form-group .field { 
     margin-bottom: 0.5em
@@ -243,6 +295,6 @@
     padding-left: 1.2em;
 }
 
-.nodeInfo input {
+.node-info input {
     margin-right: 1em;
 }
